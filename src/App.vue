@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import webPush from 'web-push';
+
 // import HelloWorld from './components/HelloWorld.vue';
 
 export default defineComponent({
@@ -19,8 +19,7 @@ export default defineComponent({
   },
   setup() {
     const initWebPushWorker = () => {
-      const keys = webPush.generateVAPIDKeys();
-      console.log(keys);
+      
     } 
 
     const onFingerPrint = () => {

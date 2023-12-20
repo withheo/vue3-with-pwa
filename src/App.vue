@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class = 'wrapper'>
-      PWA 로 작성한 vue3 페이지입니다.
+      PWA 로 작성한 vue3 페이지입니다. Hi
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
     </div>
   </div>

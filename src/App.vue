@@ -1,29 +1,10 @@
 <template>
   <div class = "app-wrapper">
+    <div class = "app-allow-icon" v-show ="state.useNotificationService">
+      <div> <MessageIcon /> </div>
+      <div> <NotificationIcon /> </div>
+    </div>
     <Login/>
-    <!-- <div class = 'wrapper'>
-      PWA 로 작성한 vue3 페이지입니다. (5초로수정) v2
-      <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
-      <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
-      
-      <div class = "box">
-        notificationStr: {{ state.notificationStr }}
-      </div>
-      <div class = "box">
-         {{ state.keyStr }}
-      </div>
-
-      <div class = "box">
-         {{ state.workerStateStr }}
-      </div>
-
-      <div class = "box">
-        메세지 보내냄:{{ state.msg }}
-      </div>
-
-      <div class = "box"> notiPermission : {{ state.notiPermission }}</div>
-      <div class = "box"> workerState : {{ state.workerState }}</div>
-    </div> -->
   </div>
 </template>
 
@@ -31,11 +12,15 @@
 import { defineComponent, onMounted, reactive } from 'vue';
 import Login from './components/Login.vue';
 import useServerWoker from './composition/useServiceWorker'
+import NotificationIcon from './components/icon/NotificationIcon.vue';
+import MessageIcon from './components/icon/MessageIcon.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    Login
+    Login,
+    NotificationIcon,
+    MessageIcon
   },
   setup() {
 
@@ -43,7 +28,7 @@ export default defineComponent({
      * check 해애할 것들
      * serviceWorker 가 되어야 한다는거..
      */
-
+    
     const state = reactive({
       keyStr: "",
       notificationStr : "",
@@ -65,6 +50,8 @@ export default defineComponent({
         if (isGrantedPermission() === false) {
           const requestPermissionRes = await requestPermission();
           state.useNotificationService = requestPermissionRes;
+        } else {
+          state.useNotificationService = true;
         }
       }
 
@@ -239,6 +226,28 @@ body {
 
 .box {
   padding: 10px;
+}
+
+.app-allow-icon {
+  position: absolute;
+  fill:white;
+  top: 0px;
+  padding-top:1rem;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  width:100%;
+  margin-right: 1rem;
+  
+  div {
+    transition: 0.2s;
+    padding: 0.5rem;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .app-wrapper {

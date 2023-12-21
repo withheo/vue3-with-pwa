@@ -8,7 +8,7 @@ const useServiceWorker = () => {
 
   const init = (serviceWorkerJs: string = './pushServiceWorker.js'): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-      if('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator) {
         navigator.serviceWorker
           .register(serviceWorkerJs)
           .then(() => {
@@ -35,7 +35,9 @@ const useServiceWorker = () => {
 
   const requestPermission = () : Promise<boolean> => {
     return new Promise((resolve, reject) => {
+      console.log(1);
       Notification.requestPermission().then((result) => {
+        console.log(result);
         state.notiPermission = result;
         if (result === "granted") {
           resolve(true)

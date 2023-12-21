@@ -11,6 +11,10 @@
       <div>
          {{ state.keyStr }}
       </div>
+
+      <div>
+         {{ state.workerStateStr }}
+      </div>
     </div>
   </div>
 </template>
@@ -30,9 +34,21 @@ export default defineComponent({
     const state = reactive({
       keyStr: "",
       notificationStr : "",
+      workerStateStr: "",
     })
     const initWebPushWorker = () => {
-      
+      if('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('./workers/pushServiceWorker.js')
+          .then( () => {
+              state.workerStateStr = 'Service worker registered!';
+              console.log('Service worker registered!');
+          })
+          .catch( err => {
+            state.workerStateStr = err;
+            console.log(err);
+          });
+      }
     } 
 
     const onFingerPrint = () => {
@@ -122,7 +138,7 @@ export default defineComponent({
     const randomNotification = () => {
       const notifTitle = "알림";
       const options = {
-        body: "안녕하세요 Notification Test "
+        body: "안녕하세요 Notification Test ",
       };
       new Notification(notifTitle, options);
       setTimeout(randomNotification, 5000);

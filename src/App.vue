@@ -154,8 +154,7 @@ export default defineComponent({
     const randomNotification2 = () => {
       try{
 
-        Notification.requestPermission().then((result) => {
-          if (result === "granted") {
+         
             state.msg = msgCnt + " : 보내기 전2 > ";
             console.log(navigator.serviceWorker);
             navigator.serviceWorker.getRegistrations().then((registration) => {
@@ -167,10 +166,7 @@ export default defineComponent({
                 state.msg = msgCnt + " : 보내기 전4 > ";
               },3000)
             });
-          } else {
-            state.msg = "거부당함 :" + result;
-          }
-        });
+         
       }catch(e: any) {
         state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
       }

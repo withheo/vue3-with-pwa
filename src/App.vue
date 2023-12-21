@@ -3,12 +3,15 @@
     <div class = 'wrapper'>
       PWA 로 작성한 vue3 페이지입니다. Hi
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
+      <div>
+         {{ state.keyStr }}
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, reactive } from 'vue';
 
 // import HelloWorld from './components/HelloWorld.vue';
 
@@ -18,6 +21,10 @@ export default defineComponent({
     
   },
   setup() {
+
+    const state = reactive({
+      keyStr: "",
+    })
     const initWebPushWorker = () => {
       
     } 
@@ -84,11 +91,13 @@ export default defineComponent({
           
           // eslint-disable-next-line no-undef
           console.log("save", newCredentialInfo);
+          state.keyStr = newCredentialInfo;
         })
         .catch(() => {
           // No acceptable authenticator or user refused consent. Handle appropriately.
 
           console.log("fail");
+          state.keyStr = " Fail";
         });
 
     }
@@ -98,7 +107,8 @@ export default defineComponent({
     })
 
     return {
-      onFingerPrint
+      onFingerPrint,
+      state
     }
   }
 });

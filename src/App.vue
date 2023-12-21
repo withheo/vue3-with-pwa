@@ -15,6 +15,10 @@
       <div>
          {{ state.workerStateStr }}
       </div>
+
+      <div>
+         {{ state.msg }}
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +39,7 @@ export default defineComponent({
       keyStr: "",
       notificationStr : "",
       workerStateStr: "",
+      msg: "",
     })
     const initWebPushWorker = () => {
       if('serviceWorker' in navigator) {
@@ -134,14 +139,20 @@ export default defineComponent({
         }
       });
     }
-
+    let msgCnt = 0;
     const randomNotification = () => {
-      const notifTitle = "알림";
-      const options = {
-        body: "안녕하세요 Notification Test ",
-      };
-      new Notification(notifTitle, options);
-      setTimeout(randomNotification, 5000);
+      try{
+        const notifTitle = "알림";
+        const options = {
+          body: "안녕하세요 Notification Test ",
+        };
+        new Notification(notifTitle, options);
+        state.msg = msgCnt + " : 보내기 > " + options.body;
+        setTimeout(randomNotification, 5000);
+      }catch(e) {
+        state.msg = msgCnt + " : 보내기 에러";
+      }
+     
     }
 
     onMounted(() => {

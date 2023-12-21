@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class = 'wrapper'>
-      PWA 로 작성한 vue3 페이지입니다. Hi
+      PWA 로 작성한 vue3 페이지입니다. (5초로수정)
       <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
       <div>
@@ -116,7 +116,7 @@ export default defineComponent({
         body: "안녕하세요 Notification Test "
       };
       new Notification(notifTitle, options);
-      setTimeout(randomNotification, 30000);
+      setTimeout(randomNotification, 5000);
     }
 
     onMounted(() => {

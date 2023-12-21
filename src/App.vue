@@ -1,8 +1,8 @@
 <template>
   <div class = "app-wrapper">
     <div class = "app-allow-icon" v-show ="state.useNotificationService">
-      <div> <MessageIcon /> </div>
-      <div> <NotificationIcon /> </div>
+      <div class = "allow-icon"> <MessageIcon /> </div>
+      <div class = "allow-icon"> <NotificationIcon /> </div>
     </div>
     <Login/>
   </div>
@@ -190,9 +190,13 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss">
+@import  './scss/index.scss';
+
+
 *{
   box-sizing: border-box;
+  font-family: "Open Sans";
 }
 body {
   width:100%;
@@ -235,10 +239,10 @@ body {
   padding-top:1rem;
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
   width:100%;
   margin-right: 1rem;
-  
+
   div {
     transition: 0.2s;
     padding: 0.5rem;

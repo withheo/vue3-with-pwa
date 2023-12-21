@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <div class = 'wrapper'>
+  <div class = "app-wrapper">
+    <Login/>
+    <!-- <div class = 'wrapper'>
       PWA 로 작성한 vue3 페이지입니다. (5초로수정) v2
       <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
@@ -22,21 +23,26 @@
 
       <div class = "box"> notiPermission : {{ state.notiPermission }}</div>
       <div class = "box"> workerState : {{ state.workerState }}</div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive } from 'vue';
-
-// import HelloWorld from './components/HelloWorld.vue';
+import Login from './components/Login.vue';
+import useServerWoker from './composition/useServiceWorker'
 
 export default defineComponent({
   name: 'App',
   components: {
-    
+    Login
   },
   setup() {
+
+    /**
+     * check 해애할 것들
+     * serviceWorker 가 되어야 한다는거..
+     */
 
     const state = reactive({
       keyStr: "",
@@ -45,25 +51,24 @@ export default defineComponent({
       msg: "",
       notiPermission : "",
       workerState: "",
+      serviceWorkerState: null as any,
+      useNotificationService: false,
     })
-    const initWebPushWorker = () => {
-      if('serviceWorker' in navigator) {
-        navigator.serviceWorker
-          .register('./pushServiceWorker.js')
-          .then(() => {
-              state.workerStateStr = 'Service worker registered!';
-              console.log('Service worker registered!');
 
-              state.notiPermission = Notification.permission;
-              navigator.serviceWorker.addEventListener('statechange', function(e: any) {
-                state.workerState = e.target.state;
-              });
-          })
-          .catch( err => {
-            state.workerStateStr = err;
-            console.log(err);
-          });
+    const initWebPushWorker = async () => {
+      const { state : serviceWorkerState, init, isGrantedPermission, requestPermission } = useServerWoker();
+      state.serviceWorkerState = serviceWorkerState;
+      const result = await init();
+      if (result === false) {
+        alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
+      } else {
+        if (isGrantedPermission() === false) {
+          const requestPermissionRes = await requestPermission();
+          state.useNotificationService = requestPermissionRes;
+        }
       }
+
+      state.serviceWorkerState.notiPermission
     } 
 
     const onFingerPrint = () => {
@@ -153,43 +158,40 @@ export default defineComponent({
     let msgCnt = 0;
     const randomNotification2 = () => {
       try{
-
-         
-            state.msg = msgCnt + " : 보내기 전2 > ";
-            console.log(navigator.serviceWorker);
-            navigator.serviceWorker.getRegistrations().then((registration) => {
-              setTimeout(() => {
-                state.msg = msgCnt + " : 보내기 전3 > ";
-                registration[0].showNotification("TEST Notification", {
-                  body: "Hello",
-                });
-                state.msg = msgCnt + " : 보내기 전4 > ";
-              },3000)
-            });
-         
+          state.msg = msgCnt + " : 보내기 전2 > ";
+          console.log(navigator.serviceWorker);
+          navigator.serviceWorker.getRegistrations().then((registration) => {
+            setTimeout(() => {
+              state.msg = msgCnt + " : 보내기 전3 > ";
+              registration[0].showNotification("TEST Notification", {
+                body: "Hello",
+              });
+              state.msg = msgCnt + " : 보내기 완료  > ";
+            },3000)
+          });
       }catch(e: any) {
         state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
       }
     }
 
-    const randomNotification = () => {
-      try{
-        const notifTitle = "info";
-        const options = {
-          body: "notification Test ",
-        };
-        state.msg = msgCnt + " : 보내기 전 > " + options.body;
-        const notification = new Notification(notifTitle, options);
-        state.msg = msgCnt + " : 보내기 후 > " + options.body + notification;
-        // setTimeout(randomNotification, 5000);
-      }catch(e: any) {
-        state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
-      }
-    }
+    // new Notification 모바일에서 X
+    // const randomNotification = () => {
+    //   try{
+    //     const notifTitle = "info";
+    //     const options = {
+    //       body: "notification Test ",
+    //     };
+    //     state.msg = msgCnt + " : 보내기 전 > " + options.body;
+    //     const notification = new Notification(notifTitle, options);
+    //     state.msg = msgCnt + " : 보내기 후 > " + options.body + notification;
+    //     // setTimeout(randomNotification, 5000);
+    //   }catch(e: any) {
+    //     state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
+    //   }
+    // }
 
     onMounted(() => {
       initWebPushWorker();
-      console.log(randomNotification);
     })
 
     return {
@@ -202,6 +204,17 @@ export default defineComponent({
 </script>
 
 <style>
+*{
+  box-sizing: border-box;
+}
+body {
+  width:100%;
+  height:100vh;
+  padding:0;
+  margin:0;
+  background-color: #15002e;
+  color: #fff;
+}
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -218,15 +231,22 @@ export default defineComponent({
   margin-top:4rem;
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 50px;
+  width: 100%;
+  height:100%;
+  padding:0;
+  margin:0;
 }
 
 .box {
   padding: 10px;
+}
+
+.app-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width:100%;
+  height:100%;
+  flex-direction: column;
 }
 </style>

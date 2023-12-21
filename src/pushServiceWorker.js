@@ -16,7 +16,7 @@ self.addEventListener('install', () => {
 
 
 // push 이벤트 정의
-self.addEventListener('push', (event) => {
+self.addEventListener('push', (event) =>{
   // 알림 데이터 받기
   const notificationData = event.data;
 

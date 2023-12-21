@@ -21,7 +21,7 @@
       </div>
 
       <div> notiPermission : {{ state.notiPermission }}</div>
-     
+      <div> workerState : {{ state.workerState }}</div>
     </div>
   </div>
 </template>
@@ -44,16 +44,20 @@ export default defineComponent({
       workerStateStr: "",
       msg: "",
       notiPermission : "",
+      workerState: "",
     })
     const initWebPushWorker = () => {
       if('serviceWorker' in navigator) {
         navigator.serviceWorker
-          .register('./workers/pushServiceWorker.js')
+          .register('./pushServiceWorker.js')
           .then(() => {
               state.workerStateStr = 'Service worker registered!';
               console.log('Service worker registered!');
 
               state.notiPermission = Notification.permission;
+              navigator.serviceWorker.addEventListener('statechange', function(e: any) {
+                state.workerState = e.target.state;
+              });
           })
           .catch( err => {
             state.workerStateStr = err;
@@ -149,13 +153,15 @@ export default defineComponent({
     let msgCnt = 0;
     const randomNotification2 = () => {
       try{
+
         Notification.requestPermission().then((result) => {
           if (result === "granted") {
             state.msg = msgCnt + " : 보내기 전2 > ";
-            navigator.serviceWorker.ready.then((registration) => {
+            console.log(navigator.serviceWorker);
+            navigator.serviceWorker.getRegistrations().then((registration) => {
               setTimeout(() => {
                 state.msg = msgCnt + " : 보내기 전3 > ";
-                registration.showNotification("TEST Notification", {
+                registration[0].showNotification("TEST Notification", {
                   body: "Hello",
                 });
                 state.msg = msgCnt + " : 보내기 전4 > ";

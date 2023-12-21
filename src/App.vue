@@ -142,17 +142,16 @@ export default defineComponent({
     let msgCnt = 0;
     const randomNotification = () => {
       try{
-        const notifTitle = "알림";
+        const notifTitle = "info";
         const options = {
-          body: "안녕하세요 Notification Test ",
+          body: "notification Test ",
         };
         new Notification(notifTitle, options);
         state.msg = msgCnt + " : 보내기 > " + options.body;
-        setTimeout(randomNotification, 5000);
-      }catch(e) {
-        state.msg = msgCnt + " : 보내기 에러";
+        // setTimeout(randomNotification, 5000);
+      }catch(e: any) {
+        state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
       }
-     
     }
 
     onMounted(() => {

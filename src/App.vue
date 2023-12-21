@@ -19,6 +19,9 @@
       <div>
          {{ state.msg }}
       </div>
+
+      <div> {{ state.notiPermission }}</div>
+     
     </div>
   </div>
 </template>
@@ -40,6 +43,7 @@ export default defineComponent({
       notificationStr : "",
       workerStateStr: "",
       msg: "",
+      notiPermission : "",
     })
     const initWebPushWorker = () => {
       if('serviceWorker' in navigator) {
@@ -48,6 +52,8 @@ export default defineComponent({
           .then( () => {
               state.workerStateStr = 'Service worker registered!';
               console.log('Service worker registered!');
+
+              state.notiPermission = Notification.permission;
           })
           .catch( err => {
             state.workerStateStr = err;
@@ -146,8 +152,9 @@ export default defineComponent({
         const options = {
           body: "notification Test ",
         };
-        new Notification(notifTitle, options);
-        state.msg = msgCnt + " : 보내기 > " + options.body;
+        state.msg = msgCnt + " : 보내기 전 > " + options.body;
+        const notification = new Notification(notifTitle, options);
+        state.msg = msgCnt + " : 보내기 후 > " + options.body + notification;
         // setTimeout(randomNotification, 5000);
       }catch(e: any) {
         state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();

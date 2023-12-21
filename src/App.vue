@@ -2,6 +2,7 @@
   <div>
     <div class = 'wrapper'>
       PWA 로 작성한 vue3 페이지입니다. Hi
+      <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
       <div>
          {{ state.keyStr }}
@@ -99,7 +100,23 @@ export default defineComponent({
           console.log("fail");
           state.keyStr = " Fail";
         });
+    }
 
+    const onAllowNotification = () => {
+      Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+          randomNotification();
+        }
+      });
+    }
+
+    const randomNotification = () => {
+      const notifTitle = "알림";
+      const options = {
+        body: "안녕하세요 Notification Test "
+      };
+      new Notification(notifTitle, options);
+      setTimeout(randomNotification, 30000);
     }
 
     onMounted(() => {
@@ -108,6 +125,7 @@ export default defineComponent({
 
     return {
       onFingerPrint,
+      onAllowNotification,
       state
     }
   }

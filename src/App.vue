@@ -6,7 +6,7 @@
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
       
       <div>
-         {{ state.notificationStr }}
+        notificationStr: {{ state.notificationStr }}
       </div>
       <div>
          {{ state.keyStr }}
@@ -20,7 +20,7 @@
          {{ state.msg }}
       </div>
 
-      <div> {{ state.notiPermission }}</div>
+      <div> notiPermission : {{ state.notiPermission }}</div>
      
     </div>
   </div>
@@ -49,7 +49,7 @@ export default defineComponent({
       if('serviceWorker' in navigator) {
         navigator.serviceWorker
           .register('./workers/pushServiceWorker.js')
-          .then( () => {
+          .then(() => {
               state.workerStateStr = 'Service worker registered!';
               console.log('Service worker registered!');
 
@@ -137,15 +137,37 @@ export default defineComponent({
     const onAllowNotification = () => {
       if (!("Notification" in window)) {
         state.notificationStr = "This browser does not support notifications.";
-      }
+      } 
       Notification.requestPermission().then((result) => {
         state.notificationStr = result;
         if (result === "granted") {
-          randomNotification();
+          //randomNotification();
+          randomNotification2();
         }
       });
     }
     let msgCnt = 0;
+    const randomNotification2 = () => {
+      try{
+        Notification.requestPermission().then((result) => {
+          if (result === "granted") {
+            state.msg = msgCnt + " : 보내기 전2 > ";
+            navigator.serviceWorker.ready.then((registration) => {
+              setTimeout(() => {
+                state.msg = msgCnt + " : 보내기 전3 > ";
+                registration.showNotification("TEST Notification", {
+                  body: "Hello",
+                });
+                state.msg = msgCnt + " : 보내기 전4 > ";
+              },3000)
+            });
+          }
+        });
+      }catch(e: any) {
+        state.msg = msgCnt + " : 보내기 에러 " + e.getMessage();
+      }
+    }
+
     const randomNotification = () => {
       try{
         const notifTitle = "info";
@@ -163,6 +185,7 @@ export default defineComponent({
 
     onMounted(() => {
       initWebPushWorker();
+      console.log(randomNotification);
     })
 
     return {

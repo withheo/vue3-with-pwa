@@ -5,23 +5,23 @@
       <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
       
-      <div>
+      <div class = "box">
         notificationStr: {{ state.notificationStr }}
       </div>
-      <div>
+      <div class = "box">
          {{ state.keyStr }}
       </div>
 
-      <div>
+      <div class = "box">
          {{ state.workerStateStr }}
       </div>
 
-      <div>
-         {{ state.msg }}
+      <div class = "box">
+        메세지 보내냄:{{ state.msg }}
       </div>
 
-      <div> notiPermission : {{ state.notiPermission }}</div>
-      <div> workerState : {{ state.workerState }}</div>
+      <div class = "box"> notiPermission : {{ state.notiPermission }}</div>
+      <div class = "box"> workerState : {{ state.workerState }}</div>
     </div>
   </div>
 </template>
@@ -167,6 +167,8 @@ export default defineComponent({
                 state.msg = msgCnt + " : 보내기 전4 > ";
               },3000)
             });
+          } else {
+            state.msg = "거부당함";
           }
         });
       }catch(e: any) {
@@ -226,5 +228,9 @@ export default defineComponent({
   text-align: center;
   color: #2c3e50;
   margin-top: 50px;
+}
+
+.box {
+  padding: 10px;
 }
 </style>

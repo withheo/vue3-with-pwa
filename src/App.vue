@@ -168,7 +168,7 @@ export default defineComponent({
               },3000)
             });
           } else {
-            state.msg = "거부당함";
+            state.msg = "거부당함 :" + result;
           }
         });
       }catch(e: any) {

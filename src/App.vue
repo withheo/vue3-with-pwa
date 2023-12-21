@@ -1,9 +1,13 @@
 <template>
   <div>
     <div class = 'wrapper'>
-      PWA 로 작성한 vue3 페이지입니다. (5초로수정)
+      PWA 로 작성한 vue3 페이지입니다. (5초로수정) v2
       <button class="btn-large" @click.stop="onAllowNotification"> 알림 허용 </button>
       <button class="btn-large" @click.stop="onFingerPrint"> 인식 </button>
+      
+      <div>
+         {{ state.notificationStr }}
+      </div>
       <div>
          {{ state.keyStr }}
       </div>
@@ -25,6 +29,7 @@ export default defineComponent({
 
     const state = reactive({
       keyStr: "",
+      notificationStr : "",
     })
     const initWebPushWorker = () => {
       
@@ -103,7 +108,11 @@ export default defineComponent({
     }
 
     const onAllowNotification = () => {
+      if (!("Notification" in window)) {
+        state.notificationStr = "This browser does not support notifications.";
+      }
       Notification.requestPermission().then((result) => {
+        state.notificationStr = result;
         if (result === "granted") {
           randomNotification();
         }

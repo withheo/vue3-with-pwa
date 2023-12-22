@@ -1,8 +1,12 @@
 <template>
   <div class = "app-wrapper">
     <div class = "app-allow-icon" v-show ="state.useNotificationService">
+      <div class = "allow-icon" @click.stop="onAllowNotification"> <LockIcon /> </div>
       <div class = "allow-icon"> <MessageIcon /> </div>
       <div class = "allow-icon" @click.stop="onNotification"> <NotificationIcon /> </div>
+    </div>
+    <div v-if="!state.useNotificationService">
+      알림 권한이 없습니다. 
     </div>
     <Login/>
   </div>
@@ -38,6 +42,7 @@ import useServerWoker from '@/compositions/useServiceWorker';
 import useNotification from '@/compositions/useNotification';
 import NotificationIcon from './components/icon/NotificationIcon.vue';
 import MessageIcon from './components/icon/MessageIcon.vue';
+import LockIcon from './components/icon/LockIcon.vue';
 import ConfirmUi from '@/components/ui/confirm/Confirm.vue';
 import useConfirm from '@/compositions/useConfirm';
 import { EModalAction } from './enums/ui';
@@ -48,7 +53,8 @@ export default defineComponent({
     Login,
     NotificationIcon,
     MessageIcon,
-    ConfirmUi
+    ConfirmUi,
+    LockIcon,
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
@@ -146,6 +152,12 @@ export default defineComponent({
       state.isShow = true;
     }
 
+    const onAllowNotification = async () => {
+      const { requestPermission } = useNotification();
+      const requestPermissionRes = await requestPermission();
+      console.log(requestPermissionRes);
+    }
+
     onMounted(() => {
       state.isLoaded = true;
       initWebPushWorker();
@@ -156,7 +168,8 @@ export default defineComponent({
       Teleport,
       onNotification,
       isShowPopup,
-      onPopupClose
+      onPopupClose,
+      onAllowNotification
     }
   }
 });

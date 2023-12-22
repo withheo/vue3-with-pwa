@@ -27,7 +27,10 @@ const useNotification = () => {
   }
 
   const isGrantedPermission = (): boolean => {
-    return state.notiPermission === 'granted';
+    if (!("Notification" in window)) { 
+      return false;
+    }
+    return state.notiPermission === 'granted' || Notification.permission === 'granted';
   }
 
   // return promise 로

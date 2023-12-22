@@ -1,0 +1,15 @@
+{
+  "framerate": "FrameRate Setting",
+  "aspectratio": "Aspect Ratio Setting",
+  "position": "Position",
+  "resize": "Resize",
+  "fit": "Fit Width or Height",
+  "font": "Font",
+  "content": "Content",
+  "color": "Color",
+  "size": "Size",
+  "box": "Box",
+  "boxColor": "Box Color",
+  "borderColor": "Border Color",
+  "border": "Border"
+}

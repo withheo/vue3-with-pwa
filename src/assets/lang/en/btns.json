@@ -1,0 +1,16 @@
+{
+  "redoBtn": "REDO",
+  "undoBtn": "UNDO",
+  "transform": "TRANSFORM",
+  "transition": "TRANSITION",
+  "text": "CHANGE TEXT",
+  "cut": "CUT",
+  "yes": "YES",
+  "no" : "NO",
+  "ok" : "OK",
+  "confirm": "CONFIRM",
+  "error": "ERROR",
+  "processing": "PROCESSING",  
+  "videoDownload": "video DownLoad",
+  "boxBorder": "BOX & BORDER"
+} 

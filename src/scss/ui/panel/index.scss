@@ -1,0 +1,18 @@
+
+/* Tailwind base */
+
+.panel-wrapper {
+  @apply flex flex-col;
+
+  .panel-header-wrapper {
+    @apply min-h-[40px] flex items-center rounded-t-[5px];
+  }
+
+  .panel-body-wrapper {
+    @apply flex-1;
+  }
+
+  .panel-footer-wrapper {
+    @apply min-h-[50px] flex items-center;
+  }
+}

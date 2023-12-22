@@ -5,7 +5,7 @@
       <div class = "allow-icon"> <MessageIcon /> </div>
       <div class = "allow-icon" @click.stop="onNotification"> <NotificationIcon /> </div>
     </div>
-    <div v-if="!state.useNotificationService">
+    <div >
       알림 권한이 없습니다. 
       {{  state.notiMsg }}
     </div>
@@ -93,6 +93,8 @@ export default defineComponent({
     }
 
     const initWebPushWorker = async () => {
+      state.useNotificationService = true;
+      state.notiMsg = "서비스를 체크합니다."
       const { state : serviceWorkerState, init } = useServerWoker();
       state.serviceWorkerState = serviceWorkerState;
       const result = await init();
@@ -113,8 +115,8 @@ export default defineComponent({
           state.notiMsg = "X. 모바일에서 알림 권한을 얻는데 실패하였습니다.";
         }
       }
-
       state.useNotificationService = true;
+      
     } 
 
     const isShowPopup = (type: string) => {      

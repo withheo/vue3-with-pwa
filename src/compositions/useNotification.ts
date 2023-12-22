@@ -27,8 +27,8 @@ const useNotification = () => {
   }
 
   const isGrantedPermission = (): boolean => {
-    console.log('Notification.permission ', Notification.permission)
-    return Notification.permission === 'granted';
+   
+    return state.notiPermission === 'granted';
   }
 
   // return promise 로

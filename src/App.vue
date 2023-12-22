@@ -7,6 +7,7 @@
     </div>
     <div v-if="!state.useNotificationService">
       알림 권한이 없습니다. 
+      {{  state.notiMsg }}
     </div>
     <Login/>
   </div>
@@ -82,6 +83,7 @@ export default defineComponent({
       sendNotification: null as any,
       confirmModalAction: EModalAction.Show,
       isShow: true,
+      notiMsg: "",
     })
 
     const Teleport = teleport_ as {
@@ -95,6 +97,7 @@ export default defineComponent({
       state.serviceWorkerState = serviceWorkerState;
       const result = await init();
       if (result === false) {
+        state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다.";
         alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
       } else {
         const { isGrantedPermission, requestPermission, sendNotification } = useNotification();
@@ -103,9 +106,11 @@ export default defineComponent({
           const requestPermissionRes = await requestPermission();
           state.useNotificationService = requestPermissionRes;
           state.sendNotification = sendNotification;
+          state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes;
         } else {
           state.useNotificationService = true;
           state.sendNotification = null;
+          state.notiMsg = "X. 모바일에서 알림 권한을 얻는데 실패하였습니다.";
         }
       }
 

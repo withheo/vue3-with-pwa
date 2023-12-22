@@ -99,7 +99,7 @@ export default defineComponent({
       state.serviceWorkerState = serviceWorkerState;
       const result = await init();
       if (result === false) {
-        state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다.";
+        state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
         alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
       } else {
         const { isGrantedPermission, requestPermission, sendNotification } = useNotification();
@@ -108,7 +108,7 @@ export default defineComponent({
           const requestPermissionRes = await requestPermission();
           state.useNotificationService = requestPermissionRes;
           state.sendNotification = sendNotification;
-          state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes;
+          state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes + "/ permission : " + Notification.permission;
         } else {
           state.useNotificationService = true;
           state.sendNotification = null;

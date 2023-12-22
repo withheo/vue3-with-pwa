@@ -6,7 +6,7 @@
       <div class = "allow-icon" @click.stop="onNotification"> <NotificationIcon /> </div>
     </div>
     <div >
-      알림 권한이 없습니다. 
+      모바일 권한을 체크합니다.<br>
       {{  state.notiMsg }}
     </div>
     <Login/>
@@ -112,7 +112,7 @@ export default defineComponent({
         } else {
           state.useNotificationService = true;
           state.sendNotification = null;
-          state.notiMsg = "X. 모바일에서 알림 권한을 얻는데 실패하였습니다.";
+          state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission : " + Notification.permission;
         }
       }
       state.useNotificationService = true;

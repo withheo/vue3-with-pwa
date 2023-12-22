@@ -167,7 +167,10 @@ export default defineComponent({
 
     onMounted(() => {
       state.isLoaded = true;
-      initWebPushWorker();
+      setTimeout(() => {
+        initWebPushWorker();
+      }, 1500)
+    
     })
 
     return {

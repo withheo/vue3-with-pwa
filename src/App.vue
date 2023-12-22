@@ -112,7 +112,7 @@ export default defineComponent({
         } else {
           state.useNotificationService = true;
           state.sendNotification = null;
-          state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission : " + Notification.permission;
+          state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission ...";
         }
       }
       state.useNotificationService = true;

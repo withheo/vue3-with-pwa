@@ -27,9 +27,7 @@ const useNotification = () => {
   }
 
   const isGrantedPermission = (): boolean => {
-    if (!("Notification" in window)) { 
-      return false;
-    }
+   
     return state.notiPermission === 'granted' || Notification.permission === 'granted';
   }
 

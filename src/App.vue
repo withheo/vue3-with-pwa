@@ -102,6 +102,8 @@ export default defineComponent({
           state.sendNotification = null;
         }
       }
+
+      state.useNotificationService = true;
     } 
 
     const isShowPopup = (type: string) => {      

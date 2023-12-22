@@ -163,6 +163,7 @@ export default defineComponent({
       const { requestPermission } = useNotification();
       const requestPermissionRes = await requestPermission();
       console.log(requestPermissionRes);
+      Notification.permission;
     }
 
     onMounted(() => {

@@ -1,7 +1,7 @@
 <template>
   <div class = "app-wrapper">
     <div class = "app-allow-icon" v-show ="state.useNotificationService">
-      <div class = "allow-icon" @click.stop="onAllowNotification"> <LockIcon /> </div>
+      <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
       <div class = "allow-icon"> <MessageIcon /> </div>
       <div class = "allow-icon" @click.stop="onNotification"> <NotificationIcon /> </div>
     </div>
@@ -82,6 +82,8 @@ export default defineComponent({
       },
       sendNotification: null as any,
       confirmModalAction: EModalAction.Show,
+      allowNotification: false,
+      initAllowNotification: false,
       isShow: true,
       notiMsg: "",
     })
@@ -93,7 +95,7 @@ export default defineComponent({
     }
 
     const initWebPushWorker = async () => {
-      state.useNotificationService = true;
+      // state.useNotificationService = true;
       state.notiMsg = "서비스를 체크합니다."
       const { state : serviceWorkerState, init } = useServerWoker();
       state.serviceWorkerState = serviceWorkerState;
@@ -102,21 +104,26 @@ export default defineComponent({
         state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
         alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
       } else {
-        const { isGrantedPermission, requestPermission, sendNotification } = useNotification();
+        const { isGrantedPermission, sendNotification } = useNotification();
+        console.log("isGrantedPermission() ", isGrantedPermission())
+        state.allowNotification = isGrantedPermission();
 
-        if (isGrantedPermission() === false) {
-          const requestPermissionRes = await requestPermission();
-          state.useNotificationService = requestPermissionRes;
+        if (state.allowNotification === true) {
           state.sendNotification = sendNotification;
-          state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes + "/ permission : " + Notification.permission;
-        } else {
-          state.useNotificationService = true;
-          state.sendNotification = null;
-          state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission ...";
         }
+        // Gesture 가 있어야 하기 때문에..
+        // if (isGrantedPermission() === false) {
+        //   const requestPermissionRes = await requestPermission();
+        //   state.useNotificationService = requestPermissionRes;
+        //   state.sendNotification = sendNotification;
+        //   state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes + "/ permission : " + Notification.permission;
+        // } else {
+        //   state.useNotificationService = true;
+        //   state.sendNotification = null;
+        //   state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission ...";
+        // }
       }
       state.useNotificationService = true;
-      
     } 
 
     const isShowPopup = (type: string) => {      
@@ -160,10 +167,15 @@ export default defineComponent({
     }
 
     const onAllowNotification = async () => {
-      const { requestPermission } = useNotification();
-      const requestPermissionRes = await requestPermission();
-      console.log(requestPermissionRes);
-      Notification.permission;
+      const { requestPermission, notificationPermission } = useNotification();
+      if (notificationPermission == "default") {
+        const requestPermissionRes = await requestPermission();
+
+        //  성공하면 refresh 함
+        console.log(requestPermissionRes);
+      } else if (notificationPermission == 'denied') {
+        window.alert("알림이 거부로 되어있습닏. 앱 알림 설정을 풀어주세요")
+      }
     }
 
     onMounted(() => {

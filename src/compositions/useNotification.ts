@@ -11,6 +11,7 @@ const useNotification = () => {
     state.msg = "This browser does not support notifications.";
   } else {
     state.isSupported = true;
+    state.notiPermission = Notification.permission;
   }
 
   const requestPermission = () : Promise<boolean> => {
@@ -27,8 +28,9 @@ const useNotification = () => {
   }
 
   const isGrantedPermission = (): boolean => {
-   
-    return state.notiPermission === 'granted';
+    // Notification.permission 이코드 넣으면... 호출할때 마다 이상하게 
+    // IOS 동작 하지 X
+    return state.notiPermission == 'granted';
   }
 
   // return promise 로
@@ -36,8 +38,10 @@ const useNotification = () => {
     if (!navigator.serviceWorker) {
       return;
     }
-    navigator.serviceWorker.getRegistrations().then((registration) => {
+    navigator.serviceWorker.getRegistrations().then((registration: any) => {
       const res = registration && registration.length > 0 ? registration[0] : null;
+
+      console.log("res > ", res)
       setTimeout(() => {
         res?.showNotification(title, {
           body: msg,
@@ -52,6 +56,7 @@ const useNotification = () => {
     requestPermission,
     isGrantedPermission,
     sendNotification,
+    notificationPermission: state.notiPermission,
   }
 }
 

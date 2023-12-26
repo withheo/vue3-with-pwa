@@ -2,8 +2,8 @@
   <div class = "app-wrapper">
     <div class = "app-allow-icon" v-show ="state.useNotificationService">
       <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
-      <div class = "allow-icon"> <MessageIcon /> </div>
-      <div class = "allow-icon" @click.stop="onNotification"> <NotificationIcon /> </div>
+      <div class = "allow-icon" v-show="state.allowNotification"> <MessageIcon /> </div>
+      <div class = "allow-icon" @click.stop="onNotification" v-show="state.allowNotification"> <NotificationIcon /> </div>
     </div>
     <div >
       모바일 권한을 체크합니다.<br>
@@ -13,6 +13,15 @@
   </div>
   <template v-if ="state.isLoaded">
     <component :is="Teleport" to="body" >
+      <Alert v-if = "isShowPopup('alert')"
+        :useOuterClose="true"
+        :isShow="true"
+        :message = "state.alertConfig.message"
+        @closeAction="onPopupClose"
+        :class = "state.alertConfig.cssPrefix"
+      > 
+      </Alert>       
+      
       <ConfirmUi v-if = "isShowPopup('confirm')" 
           @closeAction = "onPopupClose"
           :modalAction = "state.confirmModalAction"
@@ -47,6 +56,7 @@ import LockIcon from './components/icon/LockIcon.vue';
 import ConfirmUi from '@/components/ui/confirm/Confirm.vue';
 import useConfirm from '@/compositions/useConfirm';
 import { EModalAction } from './enums/ui';
+import Alert from '@/components/ui/alert/Alert.vue';
 
 export default defineComponent({
   name: 'App',
@@ -56,6 +66,7 @@ export default defineComponent({
     MessageIcon,
     ConfirmUi,
     LockIcon,
+    Alert,
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
@@ -73,6 +84,10 @@ export default defineComponent({
       serviceWorkerState: null as any,
       useNotificationService: false,
       confirmPrefix: "",
+      alertConfig: {
+        message: "",
+        cssPrefix: "",
+      },
       confirmConfig: {
         confirmMessage: {
           message: '',
@@ -169,12 +184,17 @@ export default defineComponent({
     const onAllowNotification = async () => {
       const { requestPermission, notificationPermission } = useNotification();
       if (notificationPermission == "default") {
-        const requestPermissionRes = await requestPermission();
-
-        //  성공하면 refresh 함
-        console.log(requestPermissionRes);
+        if (await requestPermission() === true) {
+          window.location.reload();
+        } else {
+          const message ="알림 권한 설정이 설정하지 못하였습니다.";
+          state.showPopupType = 'alert';
+          state.alertConfig.message = message;
+        }
       } else if (notificationPermission == 'denied') {
-        window.alert("알림이 거부로 되어있습닏. 앱 알림 설정을 풀어주세요")
+        const message ="알림이 거부로 설정되었습니다.\r\n 앱 알림 설정을 초기화 또는 허용으로 해주세요";
+        state.showPopupType = 'alert';
+        state.alertConfig.message = message;
       }
     }
 
@@ -182,7 +202,7 @@ export default defineComponent({
       state.isLoaded = true;
       setTimeout(() => {
         initWebPushWorker();
-      }, 1500)
+      }, 1000)
     
     })
 

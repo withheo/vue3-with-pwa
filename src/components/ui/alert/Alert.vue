@@ -38,7 +38,7 @@
   </ModalUi>
 </template>
 <script lang="ts">
-import { computed, SetupContext, defineComponent, PropType, reactive, ref } from 'vue'
+import { computed, defineComponent, PropType, reactive, ref } from 'vue'
 import ModalUi from '@/components/ui/modal/Modal.vue';
 import AttentionMarkAniIcon from '@/components/icon/AttentionMarkAniIcon.vue';
 import { EModalAction } from '@/enums/ui';
@@ -76,8 +76,40 @@ export default defineComponent({
       default: '',
     }
   },
-  setup(props, context: any) {
-    console.log(props, context)
+  setup(props, ctx: any) {
+    const modalEl = ref<InstanceType<typeof ModalUi>>();
+    const el = ref<HTMLElement>();
+    const { t } = useI18n();
+    const { getClassPrefix } = useCssApi(props.cssPrefix ?? '');
+    const { useSlot } = useContext(ctx);
+    const state = reactive({
+      destroied: false,
+      modalAction: props.modalAction,
+      useOuterClose: props.useOuterClose,
+      message: computed(() => props.message ?? ''),
+      title: computed(() => props.title ?? t('btns.confirm')),
+    });
+
+    const onCloseAction = () => {
+      setTimeout(() => {
+        ctx.emit('closeAction');
+        state.destroied = true;
+      }, 200);
+    }
+
+    const onBtnClick = () => {
+      modalEl.value.onCloseAction();
+    }
+
+    return {
+      modalEl,
+      el,
+      state,
+      onCloseAction,
+      onBtnClick,
+      getClassPrefix,
+      useSlot,
+    }
   },
 })
 </script>

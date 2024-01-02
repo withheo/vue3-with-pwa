@@ -60,6 +60,7 @@ const useNotification = () => {
       body: JSON.stringify(data),
     });
     const result = await response.json();
+    alert("등록 ? " + result)
     console.log("Success:", result);
   }
 

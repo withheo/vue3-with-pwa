@@ -11,12 +11,12 @@
 
 
 self.addEventListener('install', (e) => {
-  console.log("Service worker Installing!");
-  e.waitUntil(self.clients.claim());
+  console.log("pushServiceWorker Service worker Installing!");
+  // e.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('activate', (e) => {
-  console.log("Service worker activated!");
+  console.log("pushServiceWorker Service worker activated!");
 });
 
 

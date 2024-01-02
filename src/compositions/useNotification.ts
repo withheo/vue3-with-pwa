@@ -1,5 +1,16 @@
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken } from "firebase/messaging";
 
-
+const firebaseConfig = {
+  apiKey: "AIzaSyCQOkJiz7_lXXrarGQDar03MRsCzuPJSP0",
+  authDomain: "gemiso-push-message.firebaseapp.com",
+  projectId: "gemiso-push-message",
+  storageBucket: "gemiso-push-message.appspot.com",
+  messagingSenderId: "997337351696",
+  appId: "1:997337351696:web:98f69d26501284dfef2c95",
+  measurementId: "G-CYQN6NVY2N"
+};
+  
 const useNotification = () => {
   const state = {
     notiPermission: 'default', // default | denied | granted
@@ -27,10 +38,34 @@ const useNotification = () => {
     return outputArray;
   }
 
+  const getAppkey = async (): Promise<any> => {
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+    const token = await getToken(messaging, {vapidKey: "BINxsPHrwAAIzNxfZRFVlQQ6jFvib0UOk4wjFThs_B_uy4rLOBCeaEyE1Qa6YdZIW6LNxf9FYRGGCFZRQEKmjxM"});
+
+    console.log("messaging token : ", token);
+    return new Promise((resolve, reject) => {
+      resolve(token)
+    })
+  }
+
+  const registNotification = async (data: any) => {
+    const url = "http://localhost:3000";
+    const response = await fetch(`${url}/notification`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    console.log("Success:", result);
+  }
+
   const requestPermission = () : Promise<boolean> => {
     const convertedVPkey = urlB64ToUint8Array('BINxsPHrwAAIzNxfZRFVlQQ6jFvib0UOk4wjFThs_B_uy4rLOBCeaEyE1Qa6YdZIW6LNxf9FYRGGCFZRQEKmjxM');
     return new Promise((resolve, reject) => {
-      Notification.requestPermission().then((result) => {
+      Notification.requestPermission().then( (result) => {
         state.notiPermission = result;
         if (result === "granted") {
 
@@ -42,14 +77,23 @@ const useNotification = () => {
                 const t =  registration.pushManager.subscribe({
                   userVisibleOnly: true,
                   applicationServerKey: convertedVPkey,
-                }).then((x: any) => {
+                }).then( async (x: any) => {
 
                   console.log(x.endpoint);
                   console.log(x.getKey('p256dh'));
                   console.log(x.getKey('auth'));
                   console.log(JSON.stringify(x));
+                  const token = await getAppkey();
+                  await registNotification({
+                    token,
+                    created_at: new Date(),
+                    user_id : window.notification_userid,
+                  })
+                  // 서버에 등록 한다..
                 });
 
+              } else {
+                console.error(" 없다 ... ")
               }
             }, (error: any) => {
               console.error(error);
@@ -86,7 +130,7 @@ const useNotification = () => {
     navigator.serviceWorker.getRegistrations().then((registration: any) => {
       const res = registration && registration.length > 0 ? registration[0] : null;
 
-      console.log("res > ", res)
+      console.log("res > ",registration, res)
       setTimeout(() => {
         res?.showNotification(title, {
           body: msg,
@@ -102,6 +146,7 @@ const useNotification = () => {
     isGrantedPermission,
     sendNotification,
     notificationPermission: state.notiPermission,
+    getAppkey,
   }
 }
 

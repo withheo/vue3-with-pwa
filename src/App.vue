@@ -57,6 +57,15 @@ import ConfirmUi from '@/components/ui/confirm/Confirm.vue';
 import useConfirm from '@/compositions/useConfirm';
 import { EModalAction } from './enums/ui';
 import Alert from '@/components/ui/alert/Alert.vue';
+// import { getMessaging, getToken } from "firebase/messaging";
+// import { initializeApp } from "firebase/app";
+declare global {
+  // eslint-disable-next-line no-unused-vars
+  interface Window {
+    notification_userid: string;
+    crypto: any;
+  }
+}
 
 export default defineComponent({
   name: 'App',
@@ -70,10 +79,32 @@ export default defineComponent({
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
+
+    let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
+   
+    if (notification_userid) {
+      localStorage.setItem("notification_userid", notification_userid);
+      
+    } 
+    window.notification_userid = notification_userid;
+    console.log("notification_userid ", window.notification_userid)
+  
     /**
      * check 해애할 것들
      * serviceWorker 가 되어야 한다는거..
      */
+
+    // const firebaseConfig = {
+    //   apiKey: "AIzaSyCQOkJiz7_lXXrarGQDar03MRsCzuPJSP0",
+    //   authDomain: "gemiso-push-message.firebaseapp.com",
+    //   projectId: "gemiso-push-message",
+    //   storageBucket: "gemiso-push-message.appspot.com",
+    //   messagingSenderId: "997337351696",
+    //   appId: "1:997337351696:web:98f69d26501284dfef2c95",
+    //   measurementId: "G-CYQN6NVY2N"
+    // };
+
+    // const app = initializeApp(firebaseConfig);
     
     const state = reactive({
       isLoaded: false,
@@ -114,7 +145,8 @@ export default defineComponent({
       state.notiMsg = "서비스를 체크합니다."
       const { state : serviceWorkerState, init } = useServerWoker();
       state.serviceWorkerState = serviceWorkerState;
-      const result = await init();
+       const result = await init('./firebase-messaging-sw.js');
+      // const result = await init('./oneSignalSDKWorker.js');
       if (result === false) {
         state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
         alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
@@ -202,6 +234,17 @@ export default defineComponent({
       state.isLoaded = true;
       setTimeout(() => {
         initWebPushWorker();
+        // useNotification().getAppkey();
+        // const messaging = getMessaging(app);
+        // console.log("messaging :", messaging);
+        // getToken(messaging, {vapidKey: "BINxsPHrwAAIzNxfZRFVlQQ6jFvib0UOk4wjFThs_B_uy4rLOBCeaEyE1Qa6YdZIW6LNxf9FYRGGCFZRQEKmjxM"})
+        // .then((token :any) => {
+        //   console.error(token);
+        //   navigator.serviceWorker.getRegistrations().then((a: any) => {
+        //     console.error("a : ", a)
+        //   })
+        //   console.error("navigator.serviceWorker.getRegistrations() >", navigator.serviceWorker.getRegistrations())
+        // })
       }, 1000)
     
     })

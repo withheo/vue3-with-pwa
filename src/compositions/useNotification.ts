@@ -50,7 +50,8 @@ const useNotification = () => {
   }
 
   const registNotification = async (data: any) => {
-    const url = "http://localhost:3000";
+    const url = "https://port-0-web-push-3spy7mg2alqvu3uhv.sel5.cloudtype.app";
+    // "http://localhost:3000";
     const response = await fetch(`${url}/notification`, {
       method: "POST",
       headers: {

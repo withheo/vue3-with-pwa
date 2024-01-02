@@ -87,6 +87,9 @@ export default defineComponent({
       
     } 
     window.notification_userid = notification_userid;
+    setTimeout(() => {
+      alert(window.notification_userid)
+    }, 1500)
     console.log("notification_userid ", window.notification_userid)
   
     /**

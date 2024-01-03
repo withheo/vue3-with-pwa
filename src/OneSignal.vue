@@ -144,7 +144,7 @@ export default defineComponent({
     }
 
     const initWebPushWorker = async () => {
-      console.log( window.OneSignal);
+     //  console.log( window.OneSignal);
       // await window.OneSignal.Notifications.requestPermission();
     }
 

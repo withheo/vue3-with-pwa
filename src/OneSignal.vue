@@ -50,8 +50,8 @@
 import { defineComponent, onMounted, reactive } from 'vue';
 import Login from './components/Login.vue';
 import { Teleport as teleport_, TeleportProps, VNodeProps} from 'vue';
-import useServerWoker from '@/compositions/useServiceWorker';
-import useNotification from '@/compositions/useNotification';
+// //import useServerWoker from '@/compositions/useServiceWorker';
+// import useNotification from '@/compositions/useNotification';
 import NotificationIcon from './components/icon/NotificationIcon.vue';
 import MessageIcon from './components/icon/MessageIcon.vue';
 import LockIcon from './components/icon/LockIcon.vue';
@@ -59,6 +59,7 @@ import ConfirmUi from '@/components/ui/confirm/Confirm.vue';
 import useConfirm from '@/compositions/useConfirm';
 import { EModalAction } from './enums/ui';
 import Alert from '@/components/ui/alert/Alert.vue';
+
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -81,19 +82,13 @@ export default defineComponent({
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
-
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
     if (notification_userid) {
       localStorage.setItem("notification_userid", notification_userid);
-      
     } 
     window.notification_userid = notification_userid;
-   
-    // setTimeout(() => {
-    //   alert(window.notification_userid)
-    // }, 1500)
-    console.log("notification_userid ", window.notification_userid)
+
   
     /**
      * check 해애할 것들
@@ -149,37 +144,9 @@ export default defineComponent({
     }
 
     const initWebPushWorker = async () => {
-      // state.useNotificationService = true;
-      state.notiMsg = "서비스를 체크합니다."
-      const { state : serviceWorkerState, init } = useServerWoker();
-      state.serviceWorkerState = serviceWorkerState;
-       const result = await init('./firebase-messaging-sw.js');
-      // const result = await init('./oneSignalSDKWorker.js');
-      if (result === false) {
-        state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
-        alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
-      } else {
-        const { isGrantedPermission, sendNotification } = useNotification();
-        console.log("isGrantedPermission() ", isGrantedPermission())
-        state.allowNotification = isGrantedPermission();
-
-        if (state.allowNotification === true) {
-          state.sendNotification = sendNotification;
-        }
-        // Gesture 가 있어야 하기 때문에..
-        // if (isGrantedPermission() === false) {
-        //   const requestPermissionRes = await requestPermission();
-        //   state.useNotificationService = requestPermissionRes;
-        //   state.sendNotification = sendNotification;
-        //   state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes + "/ permission : " + Notification.permission;
-        // } else {
-        //   state.useNotificationService = true;
-        //   state.sendNotification = null;
-        //   state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission ...";
-        // }
-      }
-      state.useNotificationService = true;
-    } 
+      console.log( window.OneSignal);
+      // await window.OneSignal.Notifications.requestPermission();
+    }
 
     const isShowPopup = (type: string) => {      
       return state.showPopupType === type;
@@ -222,20 +189,20 @@ export default defineComponent({
     }
 
     const onAllowNotification = async () => {
-      const { requestPermission, notificationPermission } = useNotification();
-      if (notificationPermission == "default") {
-        if (await requestPermission() === true) {
-          window.location.reload();
-        } else {
-          const message ="알림 권한 설정이 설정하지 못하였습니다.";
-          state.showPopupType = 'alert';
-          state.alertConfig.message = message;
-        }
-      } else if (notificationPermission == 'denied') {
-        const message ="알림이 거부로 설정되었습니다.\r\n 앱 알림 설정을 초기화 또는 허용으로 해주세요";
-        state.showPopupType = 'alert';
-        state.alertConfig.message = message;
-      }
+      // const { requestPermission, notificationPermission } = useNotification();
+      // if (notificationPermission == "default") {
+      //   if (await requestPermission() === true) {
+      //     window.location.reload();
+      //   } else {
+      //     const message ="알림 권한 설정이 설정하지 못하였습니다.";
+      //     state.showPopupType = 'alert';
+      //     state.alertConfig.message = message;
+      //   }
+      // } else if (notificationPermission == 'denied') {
+      //   const message ="알림이 거부로 설정되었습니다.\r\n 앱 알림 설정을 초기화 또는 허용으로 해주세요";
+      //   state.showPopupType = 'alert';
+      //   state.alertConfig.message = message;
+      // }
     }
 
     onMounted(() => {
@@ -243,8 +210,8 @@ export default defineComponent({
       state.user_id = notification_userid;
       setTimeout(async () => {
         initWebPushWorker();
-        const { getAppkey } = useNotification();
-        state.token =  await getAppkey();
+       // const { getAppkey } = useNotification();
+       // state.token =  await getAppkey();
         // useNotification().getAppkey();
         // const messaging = getMessaging(app);
         // console.log("messaging :", messaging);

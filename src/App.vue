@@ -241,10 +241,14 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
+      console.log(state.serviceWorkerState);
       setTimeout(async () => {
         initWebPushWorker();
-        const { getAppkey } = useNotification();
-        state.token =  await getAppkey();
+        if (state.useNotificationService === true) {
+          const { getAppkey } = useNotification();
+          state.token =  await getAppkey();
+        }
+       
         // useNotification().getAppkey();
         // const messaging = getMessaging(app);
         // console.log("messaging :", messaging);

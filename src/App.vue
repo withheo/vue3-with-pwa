@@ -10,6 +10,8 @@
       {{  state.notiMsg }}
     </div>
     <Login/>
+    <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
+    
   </div>
   <template v-if ="state.isLoaded">
     <component :is="Teleport" to="body" >
@@ -80,6 +82,7 @@ export default defineComponent({
   setup() {
     const { showConfirmMessage } = useConfirm();
 
+
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
     if (notification_userid) {
@@ -135,6 +138,7 @@ export default defineComponent({
       initAllowNotification: false,
       isShow: true,
       notiMsg: "",
+      token: ""
     })
 
     const Teleport = teleport_ as {
@@ -235,8 +239,10 @@ export default defineComponent({
 
     onMounted(() => {
       state.isLoaded = true;
-      setTimeout(() => {
+      setTimeout(async () => {
         initWebPushWorker();
+        const { getAppkey } = useNotification();
+        state.token =  await getAppkey();
         // useNotification().getAppkey();
         // const messaging = getMessaging(app);
         // console.log("messaging :", messaging);

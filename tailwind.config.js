@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        DEFAULT: '#fff',
+        DEFAULT: '#000',
         'transparent': 'transparent',
         'base': colors.base,
         'base-dark': '#4b00a1',

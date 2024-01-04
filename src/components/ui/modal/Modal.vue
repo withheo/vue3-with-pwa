@@ -116,6 +116,7 @@ export default defineComponent({
       watch(
         () => props.isShow,
         (changeValue: boolean) => {
+          console.error(changeValue)
           changeValue === true ? onShowAction() : onCloseAction();
         },
         {immediate: true}

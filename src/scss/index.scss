@@ -1217,6 +1217,16 @@
 
 @import url(normalize.scss);
 
+/* Tailwind base */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import './scroll.scss';
 button {
   border: 0;
+}
+
+
+input {
+  color: #000;
 }

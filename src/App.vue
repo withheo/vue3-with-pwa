@@ -2,12 +2,13 @@
   <div class = "app-wrapper">
     <div class = "app-allow-icon" v-show ="state.useNotificationService">
       <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
-      <div class = "allow-icon" v-show="state.allowNotification"> <MessageIcon /> </div>
-      <div class = "allow-icon" @click.stop="onNotification" v-show="state.allowNotification"> <NotificationIcon /> </div>
+      <div class = "allow-icon" @click.stop="onOpenMessagePopup" v-show="state.allowNotification && state.isRegistedPushApp"> <MessageIcon /> </div>
+      <div class = "allow-icon" @click.stop="onEnablePushPopup" v-show="state.allowNotification && !state.isRegistedPushApp"> <NotificationIcon /> </div>
+      <div class = "allow-icon" @click.stop="onDisablePushPopup" v-show="state.allowNotification && state.isRegistedPushApp"> <NotificaionOffIcon /> </div>
     </div>
     <div >
       모바일 권한을 체크합니다.<br>
-      {{  state.notiMsg }}
+      {{ state.notiMsg }}
     </div>
     <Login/>
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
@@ -41,7 +42,22 @@
           <template #desp>
             {{ state.confirmConfig.confirmMessage.desp }}
           </template>
-        </ConfirmUi>
+      </ConfirmUi>
+      <PushPopup v-if = "isShowPopup('pushPopup')" 
+        @closeAction = "onPopupClose"
+        @onAllow:push = "onAllowPush"
+        :isShow="state.isShow"
+        class="confirm-wrapper"
+        :pushAllowState = "state.pushAllowState"
+      >
+      </PushPopup>
+      <MessagePopup  v-if = "isShowPopup('messagePopup')" 
+        @closeAction = "onPopupClose"
+        @onSend:message = "onSendMessage"
+        :isShow="state.isShow"
+        class="confirm-wrapper"
+      >
+      </MessagePopup>
     </component>
   </template>
 </template>
@@ -53,12 +69,16 @@ import { Teleport as teleport_, TeleportProps, VNodeProps} from 'vue';
 import useServerWoker from '@/compositions/useServiceWorker';
 import useNotification from '@/compositions/useNotification';
 import NotificationIcon from './components/icon/NotificationIcon.vue';
+import NotificaionOffIcon from '@/components/icon/NotificaionOffIcon.vue';
 import MessageIcon from './components/icon/MessageIcon.vue';
 import LockIcon from './components/icon/LockIcon.vue';
 import ConfirmUi from '@/components/ui/confirm/Confirm.vue';
 import useConfirm from '@/compositions/useConfirm';
 import { EModalAction } from './enums/ui';
 import Alert from '@/components/ui/alert/Alert.vue';
+import PushPopup from './components/PushPopup.vue';
+import MessagePopup from '@/components/MessagePopup.vue'
+import apiNotification from '@/api/apiNotification';
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -74,14 +94,19 @@ export default defineComponent({
   components: {
     Login,
     NotificationIcon,
+    NotificaionOffIcon,
     MessageIcon,
     ConfirmUi,
     LockIcon,
     Alert,
+    PushPopup,
+    MessagePopup
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
-
+    const { registedPushApp, getAppNotificationPermission, requestNotificationPermission, requestPermission } = useNotification();
+    const { sendMessageApi } = apiNotification();
+    
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
     if (notification_userid) {
@@ -89,29 +114,7 @@ export default defineComponent({
       
     } 
     window.notification_userid = notification_userid;
-   
-    // setTimeout(() => {
-    //   alert(window.notification_userid)
-    // }, 1500)
-    console.log("notification_userid ", window.notification_userid)
-  
-    /**
-     * check 해애할 것들
-     * serviceWorker 가 되어야 한다는거..
-     */
 
-    // const firebaseConfig = {
-    //   apiKey: "AIzaSyCQOkJiz7_lXXrarGQDar03MRsCzuPJSP0",
-    //   authDomain: "gemiso-push-message.firebaseapp.com",
-    //   projectId: "gemiso-push-message",
-    //   storageBucket: "gemiso-push-message.appspot.com",
-    //   messagingSenderId: "997337351696",
-    //   appId: "1:997337351696:web:98f69d26501284dfef2c95",
-    //   measurementId: "G-CYQN6NVY2N"
-    // };
-
-    // const app = initializeApp(firebaseConfig);
-    
     const state = reactive({
       isLoaded: false,
       showPopupType: "",
@@ -121,6 +124,7 @@ export default defineComponent({
       serviceWorkerState: null as any,
       useNotificationService: false,
       confirmPrefix: "",
+      
       alertConfig: {
         message: "",
         cssPrefix: "",
@@ -132,6 +136,9 @@ export default defineComponent({
         },
         btns: null as any,
       },
+      pushAllowState: {
+        state: "init"
+      },
       sendNotification: null as any,
       confirmModalAction: EModalAction.Show,
       allowNotification: false,
@@ -140,6 +147,7 @@ export default defineComponent({
       notiMsg: "",
       token: "",
       user_id: "",
+      isRegistedPushApp: true,
     })
 
     const Teleport = teleport_ as {
@@ -149,40 +157,43 @@ export default defineComponent({
     }
 
     const initWebPushWorker = async () => {
+      const loadJs = 'firebase-messaging-sw.js';
       // state.useNotificationService = true;
       state.notiMsg = "서비스를 체크합니다."
-      const { state : serviceWorkerState, init } = useServerWoker();
-      state.serviceWorkerState = serviceWorkerState;
-       const result = await init('./firebase-messaging-sw.js');
-      // const result = await init('./oneSignalSDKWorker.js');
-      if (result === false) {
-        state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
-        alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.")
-      } else {
-        const { isGrantedPermission, sendNotification } = useNotification();
-        console.log("isGrantedPermission() ", isGrantedPermission())
-        state.allowNotification = isGrantedPermission();
+      const { state : serviceWorkerState, init, registedServiceWorker } = useServerWoker();      
+      const activatedWorker = await registedServiceWorker(loadJs);
 
-        if (state.allowNotification === true) {
-          state.sendNotification = sendNotification;
+      if (activatedWorker === false) {
+        // 등록
+        const result = await init(`./${loadJs}`);
+        if (result === false) {
+          state.notiMsg = "모바일에서 APP 알림 기능을 사용할 수 없습니다. (서비스워커 미동작)";
+          // alert("모바일에서 APP 알림 기능을 사용할 수 없습니다.");
+          state.useNotificationService = false;
+        } else {
+          state.useNotificationService = true;
         }
-        // Gesture 가 있어야 하기 때문에..
-        // if (isGrantedPermission() === false) {
-        //   const requestPermissionRes = await requestPermission();
-        //   state.useNotificationService = requestPermissionRes;
-        //   state.sendNotification = sendNotification;
-        //   state.notiMsg = "1. 모바일에서 알림 권한을 얻어왔습니다. 결과 : " + requestPermissionRes + "/ permission : " + Notification.permission;
-        // } else {
-        //   state.useNotificationService = true;
-        //   state.sendNotification = null;
-        //   state.notiMsg = "모바일에서 알림 권한이 이미 있습니다. 결과 : " + "/ permission ...";
-        // }
+      } else {
+        state.useNotificationService = true;
       }
-      state.useNotificationService = true;
+     
+      if (getAppNotificationPermission() === 'granted') {        
+        state.allowNotification = true;
+
+        state.isRegistedPushApp = await registedPushApp();
+        // console.log(isRegistedPushApp);
+        // 여기서 알림기능도 체크하자?
+      }
+      state.serviceWorkerState = serviceWorkerState;
     } 
+
 
     const isShowPopup = (type: string) => {      
       return state.showPopupType === type;
+    }
+
+    const onEnablePushPopup = () => {
+      state.showPopupType = 'pushPopup';
     }
 
     const onNotification = () => {
@@ -219,58 +230,101 @@ export default defineComponent({
     const onPopupClose = () => {
       state.showPopupType = '';
       state.isShow = true;
+      state.pushAllowState = {
+        state: "init"
+      };
     }
 
     const onAllowNotification = async () => {
-      const { requestPermission, notificationPermission } = useNotification();
-      if (notificationPermission == "default") {
-        if (await requestPermission() === true) {
-          window.location.reload();
-        } else {
-          const message ="알림 권한 설정이 설정하지 못하였습니다.";
-          state.showPopupType = 'alert';
-          state.alertConfig.message = message;
-        }
-      } else if (notificationPermission == 'denied') {
-        const message ="알림이 거부로 설정되었습니다.\r\n 앱 알림 설정을 초기화 또는 허용으로 해주세요";
-        state.showPopupType = 'alert';
-        state.alertConfig.message = message;
+      const result = await requestNotificationPermission();
+      if (result === 'granted') { 
+        state.allowNotification = true;
       }
+    }
+
+    const onSendMessage = async (sendInfo: any) => {
+     
+      const result = await sendMessageApi(sendInfo.id, JSON.stringify({
+        title: "알림",
+        content: sendInfo.message,
+      }));
+
+      if (result.status === 200) {
+        // 닫기
+        state.isShow = false;
+        setTimeout(() => {
+          onPopupClose();
+        }, 500)
+      }
+    }
+
+    const onAllowPush = async (user_name: string) => {
+      state.pushAllowState.state = "ing";
+      const rtn = await requestPermission(true, {
+        user_name,
+      });
+      state.isRegistedPushApp = await registedPushApp();
+      state.isShow = false;
+      setTimeout(() => {
+        onPopupClose();
+      }, 500)
+      console.error(rtn);      
+    }
+
+    const doDisablePushPopup = async () => {
+      const rtn = await requestPermission(false);
+      state.isRegistedPushApp = await registedPushApp();
+      console.error(rtn);      
+      state.isShow = false;
+      setTimeout(() => {
+        onPopupClose();
+      }, 500)
+    }
+
+    const onDisablePushPopup = () => {
+      const message ="알림";
+      const desp = "알림 설정을 해제 하시겠습니까?";
+
+      const { btns } = showConfirmMessage(
+        message,
+        {
+          desp,
+          evt: {
+            beforeOkClick: () => true,
+            okClick:() => doDisablePushPopup()
+          }
+        }
+      );
+      state.showPopupType = 'confirm';
+      // state.confirmPrefix = event.detail.class;
+      state.confirmConfig.confirmMessage.message = message;
+      state.confirmConfig.confirmMessage.desp = desp;
+      state.confirmConfig.btns = btns;
+    }
+
+    const onOpenMessagePopup = () => {
+      state.showPopupType = 'messagePopup';
     }
 
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
       console.log(state.serviceWorkerState);
-      setTimeout(async () => {
-        initWebPushWorker();
-        if (state.useNotificationService === true) {
-          const { getAppkey } = useNotification();
-          state.token =  await getAppkey();
-        }
-       
-        // useNotification().getAppkey();
-        // const messaging = getMessaging(app);
-        // console.log("messaging :", messaging);
-        // getToken(messaging, {vapidKey: "BINxsPHrwAAIzNxfZRFVlQQ6jFvib0UOk4wjFThs_B_uy4rLOBCeaEyE1Qa6YdZIW6LNxf9FYRGGCFZRQEKmjxM"})
-        // .then((token :any) => {
-        //   console.error(token);
-        //   navigator.serviceWorker.getRegistrations().then((a: any) => {
-        //     console.error("a : ", a)
-        //   })
-        //   console.error("navigator.serviceWorker.getRegistrations() >", navigator.serviceWorker.getRegistrations())
-        // })
-      }, 1000)
-    
+      initWebPushWorker();
     })
 
     return {
       state,
       Teleport,
       onNotification,
+      onEnablePushPopup,
+      onDisablePushPopup,
       isShowPopup,
       onPopupClose,
-      onAllowNotification
+      onAllowNotification,
+      onAllowPush,
+      onOpenMessagePopup,
+      onSendMessage
     }
   }
 });

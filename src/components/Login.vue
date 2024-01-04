@@ -48,7 +48,7 @@ export default defineComponent({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+<style lang="scss">
   .login-wrapper{
     display: flex;
     align-items: center;
@@ -58,7 +58,7 @@ export default defineComponent({
   }
 
   .input-wrapper {
-    width: 15rem;
+    // width: 15rem;
     height: 2.5rem;
     background-color: #fff;
     border-radius: 0.3rem;
@@ -96,10 +96,12 @@ export default defineComponent({
   .input-tag { 
     display: flex;
     align-items: center;
+    width:100%;
     input {
       width: 100%;
       height: 98%;
       font-size: 1.2rem;
+      text-indent: .6rem;
       &:focus {
         outline:none;
       }

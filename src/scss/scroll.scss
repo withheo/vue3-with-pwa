@@ -1,0 +1,26 @@
+
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+  height:10px;
+  @apply bg-transparent;
+  margin-right:2px;
+  padding-right: 2px;
+}
+
+::-webkit-scrollbar-track {
+  margin-right: 2px;
+  padding-right: 2px;
+  @apply bg-base;
+  // background-color: #260052;
+  // border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  @apply bg-base-dark;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}

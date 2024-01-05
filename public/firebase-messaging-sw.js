@@ -47,8 +47,8 @@ const messaging = firebase.messaging();
 //   console.log("forground message receivce :", payload);
 // })
 
-console.log('messaging.onMessag :', messaging, messaging.onMessag );
-
+// console.log('messaging.onMessag :', messaging, messaging.onMessag );
+console.log("self ", self)
 self.addEventListener('push' , (payload) => {
   // firebase-messaing-sw 인지 파팍  
   try {
@@ -89,7 +89,9 @@ self.addEventListener('notificationclick' , (evt) => {
           if (clientList.length) {
             clientList[0].focus();
           } else {
-            clients.openWindow(openUrl);
+            clients.openWindow('/').then((wClient) => {
+              wClient ? wClient.focus() : null;
+            });
           }
         })
       )

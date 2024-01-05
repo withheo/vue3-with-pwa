@@ -8,14 +8,16 @@
   "short_name": "PWA",
   "icons": [
     {
-      "src": "icons/g192x192.png",
+      "src": "icons/maskable_icon_x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icons/g512x512.png",
+      "src": "icons/maskable_icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

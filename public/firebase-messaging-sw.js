@@ -50,6 +50,7 @@ const messaging = firebase.messaging();
 self.addEventListener('push' , (payload) => {
   // firebase-messaing-sw 인지 파팍  
   try {
+    console.log('[firebase-messaging-sw.js] Received foreground message ', payload);
     const { title, content, sended_at } = payload.data.json().data;
     const notificationTitle = title ?? 'Background Message Title';
     const notificationOptions = {

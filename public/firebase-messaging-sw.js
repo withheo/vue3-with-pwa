@@ -47,6 +47,8 @@ const messaging = firebase.messaging();
 //   console.log("forground message receivce :", payload);
 // })
 
+console.log('messaging.onMessag :', messaging, messaging.onMessag );
+
 self.addEventListener('push' , (payload) => {
   // firebase-messaing-sw 인지 파팍  
   try {
@@ -64,6 +66,7 @@ self.addEventListener('push' , (payload) => {
   }
 })
 
+// 해당 background 에서 된다는게 아닌가 보다... 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   // Customize notification here
@@ -73,7 +76,7 @@ messaging.onBackgroundMessage((payload) => {
     body: content ? `${content} (${sended_at})` : 'Background Message body.',
     icon: '/firebase-logo.png'
   };
-  return self.registration.showNotification(notificationTitle,
-      notificationOptions);
+  // return self.registration.showNotification(notificationTitle,
+  //     notificationOptions);
 })
           

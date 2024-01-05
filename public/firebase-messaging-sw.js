@@ -57,12 +57,46 @@ self.addEventListener('push' , (payload) => {
     const notificationTitle = title ?? 'Background Message Title';
     const notificationOptions = {
       body: content ? `${content} (${sended_at})` : 'Background Message body.',
-      icon: '/firebase-logo.png'
+      icon: '/icons/maskable_icon.png',
+      // image: '/icons/maskable_icon.png', image도 보여줄수 있음
+      actions: [{
+        title: '화면보기',
+        action: 'goTab',
+        icon: '/icons/arrow-icon.png',
+      }, {
+        title: '닫기',
+        action: 'close',
+      }]
     };
     return self.registration.showNotification(notificationTitle,
         notificationOptions);
   } catch(e) {
     console.error(e);
+  }
+})
+
+
+self.addEventListener('notificationclick' , (evt) => {
+  const openUrl = `${self.location.origin}`;
+  switch(evt.action) {
+    case 'goTab':
+      evt.waitUntil(
+        clients.matchAll({
+          type: "window",
+          includeUncontrolled: true
+        }).then((clientList) => {
+          console.log("clientList :" , clientList, self.location.origin)
+          if (clientList.length) {
+            clientList[0].focus();
+          } else {
+            clients.openWindow(openUrl);
+          }
+        })
+      )
+      break;
+    case 'close':
+      evt.waitUntil(evt.notification.close());
+      break;
   }
 })
 

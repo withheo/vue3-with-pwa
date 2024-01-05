@@ -1,5 +1,7 @@
 importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging-compat.js");
+// importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+// importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
 const firebaseConfig = {
   apiKey: "AIzaSyCQOkJiz7_lXXrarGQDar03MRsCzuPJSP0",
@@ -15,11 +17,11 @@ console.log("firebase  > ", firebase)
 
 
 
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-const messaging = firebase.messaging(app);
+const messaging = firebase.messaging();
 
 // messaging.onBackgroundMessage((payload) => {
 //   console.log('[firebase-messaging-sw.js] Received background message ', payload);
@@ -40,6 +42,26 @@ const messaging = firebase.messaging(app);
 // messaging.getToken(messaging, {vapidKey: "BINxsPHrwAAIzNxfZRFVlQQ6jFvib0UOk4wjFThs_B_uy4rLOBCeaEyE1Qa6YdZIW6LNxf9FYRGGCFZRQEKmjxM"}).then((key) => {
 //   console.log(key);
 // })
+
+messaging.onMessage((payload) => {
+  console.log("forground message receivce :", payload);
+})
+
+self.addEventListener('push' , (payload) => {
+  // firebase-messaing-sw 인지 파팍  
+  try {
+    const { title, content, sended_at } = payload.data.json().data;
+    const notificationTitle = title ?? 'Background Message Title';
+    const notificationOptions = {
+      body: content ? `${content} (${sended_at})` : 'Background Message body.',
+      icon: '/firebase-logo.png'
+    };
+    return self.registration.showNotification(notificationTitle,
+        notificationOptions);
+  } catch(e) {
+    console.error(e);
+  }
+})
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);

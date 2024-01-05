@@ -176,16 +176,16 @@ export default defineComponent({
       } else {
         state.useNotificationService = true;
       }
-     
-      if (getAppNotificationPermission() === 'granted') {        
-        state.allowNotification = true;
-
-        state.isRegistedPushApp = await registedPushApp();
-        // console.log(isRegistedPushApp);
-        // 여기서 알림기능도 체크하자?
-      }
+      initNotificationPermission();      
       state.serviceWorkerState = serviceWorkerState;
     } 
+
+    const initNotificationPermission = async () => {
+      if (getAppNotificationPermission() === 'granted') {        
+        state.allowNotification = true;
+        state.isRegistedPushApp = await registedPushApp();
+      }
+    }
 
 
     const isShowPopup = (type: string) => {      
@@ -235,10 +235,18 @@ export default defineComponent({
       };
     }
 
+    const showAlert = (message: string) => {
+      state.showPopupType = 'alert';
+      state.alertConfig.message = message;
+    }
+
     const onAllowNotification = async () => {
       const result = await requestNotificationPermission();
       if (result === 'granted') { 
-        state.allowNotification = true;
+        initNotificationPermission();
+        //state.allowNotification = true;
+      } else {
+        showAlert("브라우저에서 알림이 거부되었습니다.\n\r브라우저에서 알림을 다시 설정해주세요")
       }
     }
 

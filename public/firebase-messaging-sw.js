@@ -43,9 +43,9 @@ const messaging = firebase.messaging();
 //   console.log(key);
 // })
 
-messaging.onMessage((payload) => {
-  console.log("forground message receivce :", payload);
-})
+// messaging.onMessage((payload) => {
+//   console.log("forground message receivce :", payload);
+// })
 
 self.addEventListener('push' , (payload) => {
   // firebase-messaing-sw 인지 파팍  

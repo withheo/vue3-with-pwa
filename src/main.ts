@@ -4,11 +4,12 @@ import { createApp } from 'vue'
 
 import App from './App.vue'
 import OneSinal from './OneSignal.vue';
+import FingerApp from './Finger.vue';
 import I18n from '@/lang';
 
 //import OneSignalVuePlugin from '@onesignal/onesignal-vue3'
 
- const app = createApp(App);
+ const app = createApp(FingerApp);
 //const app = createApp(OneSinal);
 app.use(I18n);
 // app.use(OneSignalVuePlugin,{

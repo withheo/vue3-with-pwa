@@ -37,7 +37,8 @@ const apiNotification = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-      }
+      },
+      credentials: 'include'
     });
 
     return response;
@@ -51,6 +52,7 @@ const apiNotification = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
+      credentials: 'include',
     });
 
     return response;

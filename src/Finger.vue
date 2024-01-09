@@ -161,6 +161,7 @@ export default defineComponent({
 
           // 해당 값으로 vertify 체크를 해야한다.
           const postVerifyRegitrationResp = await postVerifyRegistration(credential);
+          showAlert('여긴 왔찌')
           const verificationJSON = await postVerifyRegitrationResp.json();
           // if (credential.id) {
           //   localStorage.setItem("credentialId", credential.id);

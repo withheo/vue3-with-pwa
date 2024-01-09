@@ -200,6 +200,8 @@ export default defineComponent({
     }
 
     const onstartFingerPrint = async () => {
+      const postVerifyRegitrationResp = await postVerifyRegistration({});
+      return;
       const encoder = new TextEncoder();
       // const acceptableCredential1 = {
       //     type: "public-key",

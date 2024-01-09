@@ -210,7 +210,7 @@ export default defineComponent({
         // Try to use UV if possible. This is also the default.
         // authenticatorAttachment: "platform",
         // requireResidentKey: true,
-        authenticatorAttachment: "cross-platform",
+        authenticatorAttachment: "platform",
         requireResidentKey: true, // 사용자 인증 정보 기능이 있는 플랫폼 인증자가 가능
         userVerification: "required" // 지문 사용 여부 
       },

@@ -43,11 +43,25 @@ const apiNotification = () => {
     return response;
   }
 
+  const postVerifyRegistration = async (data: object) => {
+    const url = `${apiUrlPrefix}/authn/verify-registration`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    return response;
+  }
+
 
   return {
     registApi,
     sendMessageApi,
     getResitrationOptions,
+    postVerifyRegistration,
   }
 }
 

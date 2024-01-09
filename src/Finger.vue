@@ -106,10 +106,10 @@ export default defineComponent({
         $props: VNodeProps & TeleportProps;
       }
     }
-    const { getResitrationOptions } = ApiWebAuthn();
+    const { getResitrationOptions, postVerifyRegistration } = ApiWebAuthn();
 
     const state = reactive({
-      version: "0.0.0.4",
+      version: "0.0.0.5",
       isLoaded: false,
       showPopupType: "",
       notificationStr : "",
@@ -157,14 +157,22 @@ export default defineComponent({
           console.log(optionsJson);
           const { data } = optionsJson;
           const credential  = await startRegistration(data);
-          state.credential = credential;
+          // state.credential = credential;
 
-          if (credential.id) {
-            localStorage.setItem("credentialId", credential.id);
+          // 해당 값으로 vertify 체크를 해야한다.
+          const postVerifyRegitrationResp = await postVerifyRegistration(credential);
+          const verificationJSON = await postVerifyRegitrationResp.json();
+          // if (credential.id) {
+          //   localStorage.setItem("credentialId", credential.id);
+          // }
+          // Show UI appropriate for the `verified` status
+          if (verificationJSON && verificationJSON.verified) {
+            showAlert("등록이 완료 되었습니다.");
+          } else {
+            showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
+              verificationJSON,
+            )}</pre>`);
           }
-          console.log("credential ", credential.id);
-
-          showAlert(credential.id)
         }
 
       } catch(err) {

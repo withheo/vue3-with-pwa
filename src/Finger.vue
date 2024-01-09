@@ -168,6 +168,7 @@ export default defineComponent({
         }
 
       } catch(err) {
+        showAlert(err as any)
         console.log(err);
       }
       

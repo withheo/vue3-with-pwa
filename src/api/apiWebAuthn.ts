@@ -31,13 +31,14 @@ const apiNotification = () => {
     return response;
   }
 
-  const getResitrationOptions = async () => {
+  const getResitrationOptions = async (data: object) => {
     const url = `${apiUrlPrefix}/authn/generate-registration-options`;
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(data),
       credentials: 'include'
     });
 

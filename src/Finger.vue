@@ -16,7 +16,7 @@
       모바일 권한을 체크합니다.<br>
       {{ state.notiMsg }}
     </div>
-    <Login/>
+    <Login ref ="LoginComponent"/>
     <div> {{ state.version }}</div>
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
     
@@ -55,7 +55,7 @@
   </template>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import Login from './components/Login.vue';
 import { Teleport as teleport_, TeleportProps, VNodeProps} from 'vue';
 
@@ -101,12 +101,17 @@ export default defineComponent({
     } 
     window.notification_userid = notification_userid;
 
+    const LoginComponent = ref<InstanceType<typeof Login>>();
+
     const Teleport = teleport_ as {
       new (): {
         $props: VNodeProps & TeleportProps;
       }
     }
-    const { getResitrationOptions, postVerifyRegistration, getAuthenticationOptions, postVerifyAuthentication } = ApiWebAuthn();
+    const { getResitrationOptions, 
+      postVerifyRegistration, 
+      getAuthenticationOptions, 
+      postVerifyAuthentication } = ApiWebAuthn();
 
     const state = reactive({
       version: "0.0.0.5",
@@ -143,38 +148,52 @@ export default defineComponent({
       user_id: "",
       isRegistedPushApp: true,
       credential: null as any
-    });
+    });    
 
     const onFingerPrint = async () => {
       if (!window.PublicKeyCredential) {
         /* lient not capable. Handle error. */
       }
+      const loginId = LoginComponent.value.getLoginId().trim();
+
+      if (loginId.length < 1) {
+        LoginComponent.value.focusLoginId();
+        showAlert("인증 등록하려면 아이디가 있어야 합니다.\r\nID 값을 넣어 채워주세요");
+        return;
+      }
     
       try {
-        const options = await getResitrationOptions();
+        const resistData = `${window.notification_userid}:${loginId}`;
+        const options = await getResitrationOptions({data: resistData});
         const optionsJson = await options.json();
-        if (optionsJson) {
-          console.log(optionsJson);
-          const { data } = optionsJson;
-          const credential  = await startRegistration(data);
-          // state.credential = credential;
-
-          // 해당 값으로 vertify 체크를 해야한다.
-          const postVerifyRegitrationResp = await postVerifyRegistration(credential);
-          // showAlert('여긴 왔찌')
-          const verificationJSON = await postVerifyRegitrationResp.json();
-          // if (credential.id) {
-          //   localStorage.setItem("credentialId", credential.id);
-          // }
-          // Show UI appropriate for the `verified` status
-          if (verificationJSON && verificationJSON.verified) {
-            showAlert("등록이 완료 되었습니다.");
-          } else {
-            showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
-              verificationJSON,
-            )}</pre>`);
-          }
+        if (options.status == 500) {
+          showAlert(optionsJson.msg);
+          return;
         }
+
+        const { data } = optionsJson;
+        const credential  = await startRegistration(data);
+        // state.credential = credential;
+
+        // 해당 값으로 vertify 체크를 해야한다.
+        const postVerifyRegitrationResp = await postVerifyRegistration({
+          key: window.notification_userid,
+          user_id: loginId,
+          credential
+        });
+        // showAlert('여긴 왔찌')
+        const verificationJSON = await postVerifyRegitrationResp.json();
+        // if (credential.id) {
+        //   localStorage.setItem("credentialId", credential.id);
+        // }
+        // Show UI appropriate for the `verified` status
+        if (verificationJSON && verificationJSON.verified) {
+          showAlert("등록이 완료 되었습니다.");
+        } else {
+          showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
+            verificationJSON,
+          )}</pre>`);
+        }        
 
       } catch(err) {
         showAlert(err as any)
@@ -257,6 +276,7 @@ export default defineComponent({
       isShowPopup,
       onPopupClose,
       onstartFingerPrint,
+      LoginComponent,
     }
   },
 })

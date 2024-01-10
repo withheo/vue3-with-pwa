@@ -111,7 +111,6 @@ export default defineComponent({
    
     if (notification_userid) {
       localStorage.setItem("notification_userid", notification_userid);
-      
     } 
     window.notification_userid = notification_userid;
 

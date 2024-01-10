@@ -10,12 +10,12 @@
     <div>
       <div class = 'input-wrapper'>
         <div class ="input-icon" ><UserIcon width="25" /></div>
-        <div class ="input-tag"><input class = 'input-border-none'/></div>
+        <div class ="input-tag"><input class = 'input-border-none' ref ="idRef" v-model="state.loginId"/></div>
       </div>
     
       <div class = 'input-wrapper'>
         <div class ="input-icon" ><PasswordIcon width="25" /></div>
-        <div class ="input-tag"><input class = 'input-border-none'/></div>
+        <div class ="input-tag"><input class = 'input-border-none'  v-model="state.loginpass" /></div>
       </div>
     </div>
     <div class = 'copyright-wrapper'> 
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import LodingIcon from './icon/LoadingIcon.vue';
 import UserIcon from './icon/UserIcon.vue';
 import PasswordIcon from './icon/PasswordIcon.vue';
@@ -39,9 +39,26 @@ export default defineComponent({
   },
   setup () {
 
+    const idRef = ref<HTMLInputElement>();
+
+    const state = reactive({
+      loginId: "",
+      loginpass: "",
+    })
+
+    const getLoginId = () => {
+      return state.loginId;
+    }
+
+    const focusLoginId = () => {
+      return idRef.value.focus();
+    }
 
     return {
-
+      state,
+      idRef,
+      getLoginId,
+      focusLoginId
     }
   }
 });

@@ -343,7 +343,7 @@ export default defineComponent({
       state.showPopupType = 'messagePopup';
     }
 
-    const x = () => {
+    const checkPWAMode = () => {
       return ["fullscreen", "standalone", "minimal-ui"].some(
         (displayMode) => window.matchMedia('(display-mode: ' + displayMode + ')').matches
     );
@@ -352,20 +352,15 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
-      const appMatch = window.matchMedia('(display-mode: standalone)').matches;
-      const andref = document.referrer.includes('android-app://');
-
-      if (appMatch || navigator || andref) {
+      if (checkPWAMode()) {
         // PWA로 설치된 상태에서 실행 중
         console.log('PWA로 설치되어 실행 중');
         state.activedWpa = true;
-        
       } else {
         // 단순히 모바일 웹에서 실행 중
         console.log('단순히 모바일 웹에서 실행 중');
       } state.activedWpa = false;
 
-      showAlert(x() as any);
       
       console.log(state.serviceWorkerState);
       initWebPushWorker();

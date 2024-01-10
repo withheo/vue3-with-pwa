@@ -58,12 +58,40 @@ const apiNotification = () => {
     return response;
   }
 
+  const getAuthenticationOptions = async () => {
+    const url = `${apiUrlPrefix}/authn/generate-authentication-options`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',
+    });
+
+    return response;
+  }
+
+  const postVerifyAuthentication = async(data: object) => {
+    const url = `${apiUrlPrefix}/authn/verify-authentication`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+
+    return response;
+  }
 
   return {
     registApi,
     sendMessageApi,
     getResitrationOptions,
     postVerifyRegistration,
+    getAuthenticationOptions,
+    postVerifyAuthentication,
   }
 }
 

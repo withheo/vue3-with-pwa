@@ -218,30 +218,36 @@ export default defineComponent({
       return state.showPopupType === type;
     }
 
-    const onstartFingerPrint = async () => {
-    
-      try {
-        const options = await getAuthenticationOptions();
+    const onstartFingerPrint = async () => {    
+      try {       
+        const options = await getAuthenticationOptions({
+          data: window.notification_userid,
+        });
         const optionsJson = await options.json();
-        if (optionsJson) {
-          console.log(optionsJson);
-          const { data } = optionsJson;
-          const authenticationRes  = await startAuthentication(data);
+        if (options.status == 500) {
+          showAlert(optionsJson.msg);
+          return;
+        }
 
-          if (authenticationRes) {
-            const postVerifyAuthenticationResp = await postVerifyAuthentication(authenticationRes);
-            const verificationJSON = await postVerifyAuthenticationResp.json();
-            // if (credential.id) {
-            //   localStorage.setItem("credentialId", credential.id);
-            // }
-            // Show UI appropriate for the `verified` status
-            if (verificationJSON && verificationJSON.verified) {
-              showAlert("정상적인 값으로 로그인 처리가 되었습니다.");
-            } else {
-              showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
-                verificationJSON,
-              )}</pre>`);
-            }
+        const { data } = optionsJson;
+        const authenticationRes  = await startAuthentication(data);
+
+        if (authenticationRes) {
+          const postVerifyAuthenticationResp = await postVerifyAuthentication({
+            key: window.notification_userid,
+            data: authenticationRes
+          });
+          const verificationJSON = await postVerifyAuthenticationResp.json();
+          // if (credential.id) {
+          //   localStorage.setItem("credentialId", credential.id);
+          // }
+          // Show UI appropriate for the `verified` status
+          if (verificationJSON && verificationJSON.verified) {
+            showAlert("정상적인 값으로 로그인 처리가 되었습니다.");
+          } else {
+            showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
+              verificationJSON,
+            )}</pre>`);
           }
         }
       } catch(err) {

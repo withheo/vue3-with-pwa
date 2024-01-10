@@ -59,14 +59,15 @@ const apiNotification = () => {
     return response;
   }
 
-  const getAuthenticationOptions = async () => {
+  const getAuthenticationOptions = async (data: object) => {
     const url = `${apiUrlPrefix}/authn/generate-authentication-options`;
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: 'include',
+      body: JSON.stringify(data),
     });
 
     return response;

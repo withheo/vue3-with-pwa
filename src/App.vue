@@ -29,7 +29,13 @@ export default defineComponent({
     
 
     onMounted(() => {
-     
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+          // PWA로 설치된 상태에서 실행 중
+          console.log('PWA로 설치되어 실행 중');
+      } else {
+          // 단순히 모바일 웹에서 실행 중
+          console.log('단순히 모바일 웹에서 실행 중');
+      }
     })
 
     return {

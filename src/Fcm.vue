@@ -1,11 +1,30 @@
 <template>
-  <div class = "app-wrapper">
-    <div class = "app-allow-icon" v-show ="state.useNotificationService">
+  <div class = "app-wrapper" v-if = "state.activedWpa">
+    <div class = "app-header-wrapper">
+      <div class ='app-auth-wrapper'>
+        <div class = "allow-icon" @click.stop="onFingerPrint">
+          <fingerPrint />
+          <div class = 'allow-icon-text'>지문등록</div>
+        </div>
+        <div class = "allow-icon" @click.stop="onstartFingerPrint">
+          <fingerPrint />
+           <div class = 'allow-icon-text'>지문로그인</div>
+        </div>
+      </div>
+      <div class = 'app-fcm-wrapper' v-show ="state.useNotificationService">
+        <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
+        <div class = "allow-icon" @click.stop="onOpenMessagePopup" v-show="state.allowNotification && state.isRegistedPushApp"> <MessageIcon /> </div>
+        <div class = "allow-icon" @click.stop="onEnablePushPopup" v-show="state.allowNotification && !state.isRegistedPushApp"> <NotificationIcon /> </div>
+        <div class = "allow-icon" @click.stop="onDisablePushPopup" v-show="state.allowNotification && state.isRegistedPushApp"> <NotificaionOffIcon /> </div>
+      </div>
+    </div>
+    <!-- <div class = "app-allow-icon" v-show ="state.useNotificationService">
       <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
       <div class = "allow-icon" @click.stop="onOpenMessagePopup" v-show="state.allowNotification && state.isRegistedPushApp"> <MessageIcon /> </div>
       <div class = "allow-icon" @click.stop="onEnablePushPopup" v-show="state.allowNotification && !state.isRegistedPushApp"> <NotificationIcon /> </div>
       <div class = "allow-icon" @click.stop="onDisablePushPopup" v-show="state.allowNotification && state.isRegistedPushApp"> <NotificaionOffIcon /> </div>
-    </div>
+    </div> -->     
+    
     <div >
       모바일 권한을 체크합니다.<br>
       {{ state.notiMsg }}
@@ -13,6 +32,11 @@
     <Login/>
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
     
+  </div>
+  <div class = "app-check-wrapper" v-else>
+    <SmileIcon height ="50%" width="50%"/>
+    PWA 모드로 실행 하는지 체크합니다.
+    <br>PWA 로 설치 진행 후 실행해 주세요.
   </div>
   <template v-if ="state.isLoaded">
     <component :is="Teleport" to="body" >
@@ -79,6 +103,9 @@ import Alert from '@/components/ui/alert/Alert.vue';
 import PushPopup from './components/PushPopup.vue';
 import MessagePopup from '@/components/MessagePopup.vue'
 import apiNotification from '@/api/apiNotification';
+import fingerPrint from '@/components/icon/FingerPrintIcon.vue';
+
+import SmileIcon from '@/components/icon/smileIcon.vue';
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -100,7 +127,9 @@ export default defineComponent({
     LockIcon,
     Alert,
     PushPopup,
-    MessagePopup
+    MessagePopup,
+    fingerPrint,
+    SmileIcon
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
@@ -115,6 +144,7 @@ export default defineComponent({
     window.notification_userid = notification_userid;
 
     const state = reactive({
+      activedWpa: false,
       isLoaded: false,
       showPopupType: "",
       notificationStr : "",
@@ -316,6 +346,17 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
+
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        // PWA로 설치된 상태에서 실행 중
+        console.log('PWA로 설치되어 실행 중');
+        state.activedWpa = true;
+      } else {
+        // 단순히 모바일 웹에서 실행 중
+        console.log('단순히 모바일 웹에서 실행 중');
+      } state.activedWpa = false;
+
+      
       console.log(state.serviceWorkerState);
       initWebPushWorker();
     })
@@ -375,6 +416,65 @@ body {
 
 .box {
   padding: 10px;
+}
+
+.app-check-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  fill: white;
+}
+
+.app-header-wrapper {
+  position: absolute;
+  fill:white;
+  top: 0px;
+  // padding-top:1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  // justify-content: flex-end;
+  width:100%;
+  // margin-right: 1rem;
+
+  .app-auth-wrapper {
+    display: flex;
+    padding:0.6rem;
+
+    .allow-icon {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-left: 0.6rem;
+    }
+  }
+
+  .app-fcm-wrapper {
+    display: flex;
+    padding:0.6rem;
+  }
+
+  .allow-icon {
+    transition: 0.2s;
+    padding: 0.5rem;
+    opacity: 0.7;
+    position: relative;
+
+    .allow-icon-text {
+      font-size: 0.6rem;
+      position:absolute;
+      bottom: -10px;
+    }
+
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
 }
 
 .app-allow-icon {

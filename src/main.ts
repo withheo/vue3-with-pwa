@@ -3,13 +3,14 @@ import '@/scss/index.scss';
 import { createApp } from 'vue'
 
 import App from './App.vue'
+import Fcm from './Fcm.vue';
 import OneSinal from './OneSignal.vue';
 import FingerApp from './Finger.vue';
 import I18n from '@/lang';
 
 //import OneSignalVuePlugin from '@onesignal/onesignal-vue3'
 
- const app = createApp(FingerApp);
+ const app = createApp(Fcm);
 //const app = createApp(OneSinal);
 app.use(I18n);
 // app.use(OneSignalVuePlugin,{

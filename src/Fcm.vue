@@ -352,17 +352,17 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
-      if (checkPWAMode()) {
-        // PWA로 설치된 상태에서 실행 중
-        console.log('PWA로 설치되어 실행 중');
-        state.activedWpa = true;
-        showAlert(checkPWAMode() as any);
-      } else {
-        // 단순히 모바일 웹에서 실행 중
-        console.log('단순히 모바일 웹에서 실행 중');
-      } state.activedWpa = false;
+      setTimeout(() => {
+        const isPWA = checkPWAMode();
 
-      showAlert(checkPWAMode() as any);
+        if (isPWA === true) {
+          state.activedWpa = true;
+        } else {
+          showAlert(isPWA as any);
+          state.activedWpa = false;
+        }
+
+      }, 500);
       
       console.log(state.serviceWorkerState);
       initWebPushWorker();

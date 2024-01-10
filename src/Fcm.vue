@@ -346,8 +346,10 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
+      const appMatch = window.matchMedia('(display-mode: standalone)').matches;
+      const andref = document.referrer.includes('android-app://');
 
-      if (window.matchMedia('(display-mode: standalone)').matches) {
+      if (appMatch || navigator || andref) {
         // PWA로 설치된 상태에서 실행 중
         console.log('PWA로 설치되어 실행 중');
         state.activedWpa = true;

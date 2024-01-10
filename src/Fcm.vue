@@ -352,17 +352,13 @@ export default defineComponent({
     onMounted(() => {
       state.isLoaded = true;
       state.user_id = notification_userid;
-      setTimeout(() => {
-        const isPWA = checkPWAMode();
-
-        if (isPWA === true) {
-          state.activedWpa = true;
-        } else {
-          showAlert(isPWA as any);
-          state.activedWpa = false;
-        }
-
-      }, 500);
+      const isPWA = checkPWAMode();
+      if (isPWA === true) {
+        state.activedWpa = true;
+      } else {
+        showAlert(isPWA as any);
+        state.activedWpa = false;
+      }
       
       console.log(state.serviceWorkerState);
       initWebPushWorker();

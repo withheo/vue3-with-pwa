@@ -417,6 +417,7 @@ export default defineComponent({
         const { data } = optionsJson;        
         const credential  = await startRegistration(data);
         // state.credential = credential;
+        alert(data.challenge);
 
         // 해당 값으로 vertify 체크를 해야한다.
         const postVerifyRegitrationResp = await postVerifyRegistration({

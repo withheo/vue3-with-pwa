@@ -333,7 +333,7 @@ export default defineComponent({
         if (rtn === false) {
           const version = navigator.userAgent.split('Version/')[1].split(' ')[0];
           const msg = getStateMsg();
-          showAlert(`오류 - ${msg} - ${version}`);
+          showAlert(`오류 - ${msg} - ${version} - ${window.navigator.userAgent}`);
           return;
         }
         

@@ -330,6 +330,7 @@ export default defineComponent({
         const rtn = await requestPermission(true, {
           user_name,
         });
+
         if (rtn === false) {
           const version = navigator.userAgent.split('Version/')[1].split(' ')[0];
           const msg = getStateMsg();
@@ -337,11 +338,11 @@ export default defineComponent({
           return;
         }
         
-       // state.isRegistedPushApp = await registedPushApp();
+        state.isRegistedPushApp = await registedPushApp();
         state.isShow = false;
-       // // setTimeout(() => {
-        //   onPopupClose();
-        // }, 500)
+        setTimeout(() => {
+          onPopupClose();
+        }, 500);
       } catch(err) {
         const msg = getStateMsg();
         showAlert(` catch 오류 - ${msg}`);

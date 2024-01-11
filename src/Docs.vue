@@ -27,7 +27,7 @@ export default defineComponent({
     })
 
     onMounted(() => {
-      state.isAndroid = navigator.userAgent.indexOf("Safari") === -1;
+      state.isAndroid = navigator.userAgent.indexOf("Chrome") !== -1;
     })
 
     return {

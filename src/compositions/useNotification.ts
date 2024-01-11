@@ -91,10 +91,12 @@ const useNotification = () => {
   const canBrowserSupportNotifaction = (): boolean => {
     let isSupported = false;
     if (navigator.userAgent.indexOf('AppleWebKit') !== -1 || navigator.userAgent.indexOf('Safari') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
-      if ((navigator.userAgent.indexOf('AppleWebKit') !== -1 || navigator.userAgent.indexOf('Safari') !== -1) && navigator.userAgent.indexOf('Version/') !== -1) {
+      if ((navigator.userAgent.indexOf('AppleWebKit') !== -1 || navigator.userAgent.indexOf('Safari') !== -1 ) && navigator.userAgent.indexOf('Version/') !== -1) {
         const version = navigator.userAgent.split('Version/')[1].split(' ')[0];
-        isSupported = parseFloat(version) < 16.4;
-        state.msg = '사파리 브러우저는 16.4 버전 이상에서만 동작합니다.';
+        isSupported = parseFloat(version) > 16.4;
+        if (isSupported === false) {
+          state.msg = '사파리 브러우저는 16.4 버전 이상에서만 동작합니다.';
+        }
       } else {
         isSupported = true;
       }

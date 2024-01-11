@@ -331,8 +331,9 @@ export default defineComponent({
           user_name,
         });
         if (rtn === false) {
+          const version = navigator.userAgent.split('Version/')[1].split(' ')[0];
           const msg = getStateMsg();
-          showAlert(`오류 - ${msg}`);
+          showAlert(`오류 - ${msg} - ${version}`);
           return;
         }
         

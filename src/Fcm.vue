@@ -50,6 +50,7 @@
     <SmileIcon height ="50%" width="50%"/>
     PWA 모드로 실행 하는지 체크합니다.
     <br>PWA 로 설치 진행 후 실행해 주세요.
+    <button class = 'btn' @click="onClickShowInstallDoc"> 설치 방법 보기</button>
   </div>
   <div v-else> 
     <LoadingVue :title = "state.loadding.title" :message="state.loadding.message"/>
@@ -124,6 +125,8 @@ import SmileIcon from '@/components/icon/smileIcon.vue';
 import LoadingVue from '@/components/Loading.vue';
 import ApiWebAuthn from '@/api/apiWebAuthn';
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
+import { useRouter } from "vue-router";
+
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -160,7 +163,7 @@ export default defineComponent({
       postVerifyAuthentication } = ApiWebAuthn();
 
     const LoginComponent = ref<InstanceType<typeof Login>>();
-    
+    const router = useRouter();
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
     if (notification_userid) {
@@ -497,6 +500,10 @@ export default defineComponent({
     
     }
 
+    const onClickShowInstallDoc = () => {
+      router.push({path:"/install-docs"});
+    }
+
     onMounted(async () => {
       // state.isLoaded = true;
       state.user_id = notification_userid;
@@ -537,7 +544,8 @@ export default defineComponent({
       onSendMessage,
       onFingerPrint,
       onstartFingerPrint,
-      LoginComponent
+      LoginComponent,
+      onClickShowInstallDoc
     }
   }
 });
@@ -577,6 +585,13 @@ body {
   height:100%;
   padding:0;
   margin:0;
+}
+
+.btn {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #430096;
+  border-radius: 0.2rem;
 }
 
 .box {

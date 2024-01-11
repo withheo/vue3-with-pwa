@@ -414,7 +414,7 @@ export default defineComponent({
           return;
         }
 
-        const { data } = optionsJson;
+        const { data } = optionsJson;        
         const credential  = await startRegistration(data);
         // state.credential = credential;
 
@@ -422,7 +422,8 @@ export default defineComponent({
         const postVerifyRegitrationResp = await postVerifyRegistration({
           key: window.notification_userid,
           user_id: loginId,
-          credential
+          credential,
+          challenge: data.challenge,
         });
         // showAlert('여긴 왔찌')
         const verificationJSON = await postVerifyRegitrationResp.json();
@@ -472,7 +473,8 @@ export default defineComponent({
         if (authenticationRes) {
           const postVerifyAuthenticationResp = await postVerifyAuthentication({
             key: window.notification_userid,
-            data: authenticationRes
+            data: authenticationRes,
+            challenge: data.challenge,
           });
           const verificationJSON = await postVerifyAuthenticationResp.json();
           // if (credential.id) {

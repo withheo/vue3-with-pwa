@@ -178,7 +178,7 @@ export default defineComponent({
       serviceWorkerState: null as any,
       useNotificationService: false,
       confirmPrefix: "",
-      version:"24.01.11-11.35",
+      version:"24.01.11-13.11",
       alertConfig: {
         message: "",
         cssPrefix: "",
@@ -417,7 +417,7 @@ export default defineComponent({
         const { data } = optionsJson;        
         const credential  = await startRegistration(data);
         // state.credential = credential;
-        alert(data.challenge);
+        //alert(data.challenge);
 
         // 해당 값으로 vertify 체크를 해야한다.
         const postVerifyRegitrationResp = await postVerifyRegistration({

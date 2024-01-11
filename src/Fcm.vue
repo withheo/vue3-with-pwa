@@ -42,6 +42,7 @@
       {{ state.notiMsg }}
     </div>
     <Login ref ="LoginComponent"/>
+    <div> {{ state.version }}</div>
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
     
   </div>
@@ -177,7 +178,7 @@ export default defineComponent({
       serviceWorkerState: null as any,
       useNotificationService: false,
       confirmPrefix: "",
-      
+      version:"24.01.11-11.35",
       alertConfig: {
         message: "",
         cssPrefix: "",
@@ -335,11 +336,11 @@ export default defineComponent({
           return;
         }
         
-        state.isRegistedPushApp = await registedPushApp();
+       // state.isRegistedPushApp = await registedPushApp();
         state.isShow = false;
-        setTimeout(() => {
-          onPopupClose();
-        }, 500)
+       // // setTimeout(() => {
+        //   onPopupClose();
+        // }, 500)
       } catch(err) {
         const msg = getStateMsg();
         showAlert(` catch 오류 - ${msg}`);

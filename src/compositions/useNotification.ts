@@ -148,9 +148,9 @@ const useNotification = () => {
     return Notification.permission;
   }
 
-  const requestPermission = async (isSubscribe:boolean,  payload?: object) => {
-    if (canBrowserSupportNotifaction() === false) return;
+  const requestPermission = async (isSubscribe:boolean,  payload?: object) => {   
     try {
+      if (canBrowserSupportNotifaction() === false) return new Promise((resolve) => resolve(false));
       const registration = await getFoundServiceWorker();
       if (registration) {
         const subscription = await registration.pushManager.getSubscription();

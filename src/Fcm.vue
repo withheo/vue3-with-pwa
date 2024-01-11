@@ -41,7 +41,7 @@
       모바일 권한을 체크합니다.<br>
       {{ state.notiMsg }}
     </div>
-    <Login/>
+    <Login ref ="LoginComponent"/>
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
     
   </div>
@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import Login from './components/Login.vue';
 import { Teleport as teleport_, TeleportProps, VNodeProps} from 'vue';
 import useServerWoker from '@/compositions/useServiceWorker';
@@ -121,6 +121,8 @@ import apiNotification from '@/api/apiNotification';
 import fingerPrint from '@/components/icon/FingerPrintIcon.vue';
 import SmileIcon from '@/components/icon/smileIcon.vue';
 import LoadingVue from '@/components/Loading.vue';
+import ApiWebAuthn from '@/api/apiWebAuthn';
+import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -151,6 +153,12 @@ export default defineComponent({
     const { showConfirmMessage } = useConfirm();
     const { registedPushApp, getAppNotificationPermission, requestNotificationPermission, requestPermission } = useNotification();
     const { sendMessageApi, getLivedServer } = apiNotification();
+    const { getResitrationOptions, 
+      postVerifyRegistration, 
+      getAuthenticationOptions, 
+      postVerifyAuthentication } = ApiWebAuthn();
+
+    const LoginComponent = ref<InstanceType<typeof Login>>();
     
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
@@ -369,6 +377,107 @@ export default defineComponent({
       );
     }
 
+    const onFingerPrint = async () => {
+      if (!window.PublicKeyCredential) {
+        /* lient not capable. Handle error. */
+      }
+      const loginId = LoginComponent.value.getLoginId().trim();
+
+      if (loginId.length < 1) {
+        LoginComponent.value.focusLoginId();
+        showAlert("인증 등록하려면 아이디가 있어야 합니다.\r\nID 값을 넣어 채워주세요");
+        return;
+      }
+    
+      try {
+        const resistData = `${window.notification_userid}:${loginId}`;
+        const options = await getResitrationOptions({data: resistData});
+        const optionsJson = await options.json();
+        if (options.status == 500) {
+          showAlert(optionsJson.msg);
+          return;
+        }
+
+        const { data } = optionsJson;
+        const credential  = await startRegistration(data);
+        // state.credential = credential;
+
+        // 해당 값으로 vertify 체크를 해야한다.
+        const postVerifyRegitrationResp = await postVerifyRegistration({
+          key: window.notification_userid,
+          user_id: loginId,
+          credential
+        });
+        // showAlert('여긴 왔찌')
+        const verificationJSON = await postVerifyRegitrationResp.json();
+        // if (credential.id) {
+        //   localStorage.setItem("credentialId", credential.id);
+        // }
+        // Show UI appropriate for the `verified` status
+        if (verificationJSON && verificationJSON.verified) {
+          showAlert("등록이 완료 되었습니다.");
+        } else {
+          showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
+            verificationJSON,
+          )}</pre>`);
+        }        
+
+      } catch(err) {
+        showAlert(err as any)
+        console.log(err);
+      }
+      
+
+      // 해당 방법으로 만들어도 해당 생체 인식 정보는 표시X 
+      // 해당 정보는 서버 및 인증자 외부로 유출 되지 않는다.
+      
+
+      // try {
+      //   const resp = await startRegistration(options as any);
+      // } catch(error) {
+      //   console.error(error);
+      // }
+    }
+
+    const onstartFingerPrint = async () => {    
+      try {       
+        const options = await getAuthenticationOptions({
+          data: window.notification_userid,
+        });
+        const optionsJson = await options.json();
+        if (options.status == 500) {
+          showAlert(optionsJson.msg);
+          return;
+        }
+
+        const { data } = optionsJson;
+        const authenticationRes  = await startAuthentication(data);
+
+        if (authenticationRes) {
+          const postVerifyAuthenticationResp = await postVerifyAuthentication({
+            key: window.notification_userid,
+            data: authenticationRes
+          });
+          const verificationJSON = await postVerifyAuthenticationResp.json();
+          // if (credential.id) {
+          //   localStorage.setItem("credentialId", credential.id);
+          // }
+          // Show UI appropriate for the `verified` status
+          if (verificationJSON && verificationJSON.verified) {
+            showAlert("정상적인 값으로 로그인 처리가 되었습니다.");
+          } else {
+            showAlert( `Oh no, something went wrong! Response: <pre>${JSON.stringify(
+              verificationJSON,
+            )}</pre>`);
+          }
+        }
+      } catch(err) {
+        showAlert(err as any)
+        console.log(err);
+      }
+    
+    }
+
     onMounted(async () => {
       // state.isLoaded = true;
       state.user_id = notification_userid;
@@ -406,7 +515,10 @@ export default defineComponent({
       onAllowNotification,
       onAllowPush,
       onOpenMessagePopup,
-      onSendMessage
+      onSendMessage,
+      onFingerPrint,
+      onstartFingerPrint,
+      LoginComponent
     }
   }
 });

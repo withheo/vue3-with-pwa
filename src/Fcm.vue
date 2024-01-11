@@ -151,7 +151,7 @@ export default defineComponent({
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
-    const { registedPushApp, getAppNotificationPermission, requestNotificationPermission, requestPermission } = useNotification();
+    const { registedPushApp, getAppNotificationPermission, requestNotificationPermission, requestPermission, getStateMsg } = useNotification();
     const { sendMessageApi, getLivedServer } = apiNotification();
     const { getResitrationOptions, 
       postVerifyRegistration, 
@@ -324,16 +324,29 @@ export default defineComponent({
     }
 
     const onAllowPush = async (user_name: string) => {
-      state.pushAllowState.state = "ing";
-      const rtn = await requestPermission(true, {
-        user_name,
-      });
-      state.isRegistedPushApp = await registedPushApp();
-      state.isShow = false;
-      setTimeout(() => {
-        onPopupClose();
-      }, 500)
-      console.error(rtn);      
+      try {
+        state.pushAllowState.state = "ing";
+        const rtn = await requestPermission(true, {
+          user_name,
+        });
+        if (rtn === false) {
+          const msg = getStateMsg();
+          showAlert(`오류 - ${msg}`);
+          return;
+        }
+        
+        state.isRegistedPushApp = await registedPushApp();
+        state.isShow = false;
+        setTimeout(() => {
+          onPopupClose();
+        }, 500)
+      } catch(err) {
+        const msg = getStateMsg();
+        showAlert(` catch 오류 - ${msg}`);
+        return;
+      }
+      
+      // console.error(rtn);      
     }
 
     const doDisablePushPopup = async () => {

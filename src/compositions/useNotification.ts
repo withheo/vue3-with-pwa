@@ -234,6 +234,7 @@ const useNotification = () => {
     notificationPermission: state.notiPermission,
     getAppNotificationPermission,
     registedPushApp,
+    getStateMsg: () => state.msg,
   }
 }
 

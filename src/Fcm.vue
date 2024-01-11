@@ -1,5 +1,5 @@
 <template>
-  <div class = "app-wrapper" v-if = "state.activedWpa">
+  <div class = "app-wrapper" v-if = "state.activedWpa && state.isLoaded">
     <div class = "app-header-wrapper">
       <div class ='app-auth-wrapper'>
         <div class = "allow-icon" @click.stop="onFingerPrint">
@@ -12,10 +12,22 @@
         </div>
       </div>
       <div class = 'app-fcm-wrapper' v-show ="state.useNotificationService">
-        <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> <LockIcon /> </div>
-        <div class = "allow-icon" @click.stop="onOpenMessagePopup" v-show="state.allowNotification && state.isRegistedPushApp"> <MessageIcon /> </div>
-        <div class = "allow-icon" @click.stop="onEnablePushPopup" v-show="state.allowNotification && !state.isRegistedPushApp"> <NotificationIcon /> </div>
-        <div class = "allow-icon" @click.stop="onDisablePushPopup" v-show="state.allowNotification && state.isRegistedPushApp"> <NotificaionOffIcon /> </div>
+        <div class = "allow-icon" @click.stop="onAllowNotification" v-show="!state.allowNotification"> 
+          <LockIcon /> 
+          <div class = 'allow-icon-text'>알림설정</div>
+        </div>
+        <div class = "allow-icon" @click.stop="onOpenMessagePopup" v-show="state.allowNotification && state.isRegistedPushApp"> 
+          <MessageIcon /> 
+          <div class = 'allow-icon-text'>알림전송</div>
+        </div>
+        <div class = "allow-icon" @click.stop="onEnablePushPopup" v-show="state.allowNotification && !state.isRegistedPushApp"> 
+          <NotificationIcon /> 
+          <div class = 'allow-icon-text'>알림등록</div>
+        </div>
+        <div class = "allow-icon" @click.stop="onDisablePushPopup" v-show="state.allowNotification && state.isRegistedPushApp"> 
+          <NotificaionOffIcon /> 
+          <div class = 'allow-icon-text'>알림해제</div>
+        </div>
       </div>
     </div>
     <!-- <div class = "app-allow-icon" v-show ="state.useNotificationService">
@@ -33,10 +45,13 @@
     <div style ="display:flex;padding:10px;"> {{  state.token }} </div>
     
   </div>
-  <div class = "app-check-wrapper" v-else>
+  <div class = "app-check-wrapper" v-else-if = "!state.activedWpa">
     <SmileIcon height ="50%" width="50%"/>
     PWA 모드로 실행 하는지 체크합니다.
     <br>PWA 로 설치 진행 후 실행해 주세요.
+  </div>
+  <div v-else> 
+    <LoadingVue :title = "state.loadding.title" :message="state.loadding.message"/>
   </div>
   <template v-if ="state.isLoaded">
     <component :is="Teleport" to="body" >
@@ -104,8 +119,8 @@ import PushPopup from './components/PushPopup.vue';
 import MessagePopup from '@/components/MessagePopup.vue'
 import apiNotification from '@/api/apiNotification';
 import fingerPrint from '@/components/icon/FingerPrintIcon.vue';
-
 import SmileIcon from '@/components/icon/smileIcon.vue';
+import LoadingVue from '@/components/Loading.vue';
 // import { getMessaging, getToken } from "firebase/messaging";
 // import { initializeApp } from "firebase/app";
 declare global {
@@ -129,12 +144,13 @@ export default defineComponent({
     PushPopup,
     MessagePopup,
     fingerPrint,
-    SmileIcon
+    SmileIcon,
+    LoadingVue
   },
   setup() {
     const { showConfirmMessage } = useConfirm();
     const { registedPushApp, getAppNotificationPermission, requestNotificationPermission, requestPermission } = useNotification();
-    const { sendMessageApi } = apiNotification();
+    const { sendMessageApi, getLivedServer } = apiNotification();
     
     let notification_userid = localStorage.getItem("notification_userid") ?? window.crypto.randomUUID();
    
@@ -177,6 +193,10 @@ export default defineComponent({
       token: "",
       user_id: "",
       isRegistedPushApp: true,
+      loadding: {
+        title: "Initialize App",
+        message: "잠시만 기다려 주세요."
+      }
     })
 
     const Teleport = teleport_ as {
@@ -346,22 +366,33 @@ export default defineComponent({
     const checkPWAMode = () => {
       return ["fullscreen", "standalone", "minimal-ui"].some(
         (displayMode) => window.matchMedia('(display-mode: ' + displayMode + ')').matches
-    );
+      );
     }
 
-    onMounted(() => {
-      state.isLoaded = true;
+    onMounted(async () => {
+      // state.isLoaded = true;
       state.user_id = notification_userid;
       const isPWA = checkPWAMode();
       if (isPWA === true) {
-        state.activedWpa = true;
+        state.activedWpa = true;  
+        initWebPushWorker();      
       } else {
-        showAlert(isPWA as any);
         state.activedWpa = false;
       }
+
+      try {
+        const isLivedServerApiResponse = await getLivedServer();
+        if (isLivedServerApiResponse.status === 200) {
+          state.isLoaded = true;
+        } else {
+          state.loadding.title = "Error";
+          state.loadding.message = "서버 접속에 문제가 발생하였습니다.";
+        }
+      } catch(err) {
+        state.loadding.title = "Error";
+        state.loadding.message = "서버 접속에 문제가 발생하였습니다.";
+      }
       
-      console.log(state.serviceWorkerState);
-      initWebPushWorker();
     })
 
     return {
@@ -466,6 +497,7 @@ body {
     padding: 0.5rem;
     opacity: 0.7;
     position: relative;
+    margin-left: 0.6rem;
 
     .allow-icon-text {
       font-size: 0.6rem;

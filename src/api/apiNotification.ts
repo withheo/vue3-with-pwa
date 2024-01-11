@@ -43,11 +43,30 @@ const apiNotification = () => {
     return response;
   }
 
+  const getLivedServer = async() => {
+    const timeout = 3000;
+    const url = `${apiUrlPrefix}/lived`;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    const id = setTimeout(() => controller.abort(), timeout);
+    const response = await fetch(url, {
+      method: "GET",
+      signal,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    clearTimeout(id);
+    return response;
+  }
+
 
   return {
     registApi,
     sendMessageApi,
     getSendMessageUserApi,
+    getLivedServer,
   }
 }
 

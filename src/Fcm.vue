@@ -181,7 +181,7 @@ export default defineComponent({
       serviceWorkerState: null as any,
       useNotificationService: false,
       confirmPrefix: "",
-      version:"24.01.11-13.11",
+      version:"24.01.18-16.01",
       alertConfig: {
         message: "",
         cssPrefix: "",
@@ -497,7 +497,6 @@ export default defineComponent({
         showAlert(err as any)
         console.log(err);
       }
-    
     }
 
     const onClickShowInstallDoc = () => {
@@ -507,7 +506,7 @@ export default defineComponent({
     onMounted(async () => {
       // state.isLoaded = true;
       state.user_id = notification_userid;
-      const isPWA = checkPWAMode();
+      const isPWA = true ; //checkPWAMode();
       if (isPWA === true) {
         state.activedWpa = true;  
         initWebPushWorker();      

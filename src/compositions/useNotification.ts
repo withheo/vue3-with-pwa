@@ -219,7 +219,7 @@ const useNotification = () => {
 
   const registedPushApp = async () : Promise<boolean> => {
     const registration = await getFoundServiceWorker();
-    const subscription = await registration.pushManager.getSubscription();   
+    const subscription = await registration?.pushManager?.getSubscription();   
     return new Promise((resolve) => {
       subscription ? resolve(true) : resolve(false);
     })

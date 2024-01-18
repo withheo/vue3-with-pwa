@@ -3,6 +3,34 @@ importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging-comp
 // importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 // importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
+
+let messaging = null;
+const CACHE_NAME = 'pwa-test-offline';
+
+const installFiles = [
+  '/images/doc_1.png',
+  'index.html',
+];
+
+self.addEventListener('install', (event) => {
+  // cache에 
+  console.log("service worker - install")
+  event.waitUntil((async() => {
+    const cache = await caches.open(CACHE_NAME);
+    console.log(" chache 저장 : ", installFiles);
+    await cache.addAll(installFiles);
+  })());
+});
+
+self.addEventListener('activate', () => {
+  console.log("service worker - activate")
+});
+
+self.addEventListener('fetch', (event)  => {
+  console.log("service worker - fetch")
+  console.log(" fetch 가 됨: ", event);
+});
+
 const firebaseConfig = {
   apiKey: "AIzaSyCQOkJiz7_lXXrarGQDar03MRsCzuPJSP0",
   authDomain: "gemiso-push-message.firebaseapp.com",
@@ -13,15 +41,11 @@ const firebaseConfig = {
   measurementId: "G-CYQN6NVY2N"
 };
 
-console.log("firebase  > ", firebase)
-
-
-
 firebase.initializeApp(firebaseConfig);
+messaging = firebase.messaging();
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-const messaging = firebase.messaging();
 
 // messaging.onBackgroundMessage((payload) => {
 //   console.log('[firebase-messaging-sw.js] Received background message ', payload);
@@ -48,7 +72,8 @@ const messaging = firebase.messaging();
 // })
 
 // console.log('messaging.onMessag :', messaging, messaging.onMessag );
-console.log("self ", self)
+// console.log("self ", self)
+
 self.addEventListener('push' , (payload) => {
   // firebase-messaing-sw 인지 파팍  
   try {

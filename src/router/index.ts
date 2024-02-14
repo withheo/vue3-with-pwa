@@ -6,10 +6,11 @@ import {
 
 import FcmPage from '@/Fcm.vue';
 import DocPage from '@/Docs.vue';
+import RecordPage  from '@/RecordPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
+    path: "/record",
     name: '',
     component: FcmPage,
   },
@@ -17,6 +18,11 @@ const routes: RouteRecordRaw[] = [
     path: "/install-docs",
     name: "docs Page",
     component: DocPage,
+  },
+  { 
+    path: "/",
+    name: 'voice Record Page',
+    component: RecordPage,
   }
 ];
 

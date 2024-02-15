@@ -31,8 +31,8 @@ export default defineComponent({
   setup() {
     const recordVisualizer = ref<HTMLCanvasElement>();
     const recordAudio = ref<HTMLAudioElement>();   
-    const Waveform = require('./lib/recorder/waveform');
-    const VUMeter = require('./lib/recorder/vumeter');
+    //const Waveform = require('./lib/recorder/waveform');
+    //const VUMeter = require('./lib/recorder/vumeter');
     const createLinkFromAudioBuffer = require('./lib/recorder/exporter');
 
     const state = reactive({
@@ -42,18 +42,24 @@ export default defineComponent({
       rec: null,
       gumStream: null,
       audioContext: null,
+      processorPort: null
     })
 
 
     const onRecord = async () => {
       if (state.isRecord === true) return;
       state.audioContext = await new AudioContext();
-      initializeAudio(); 
+      await initializeAudio(); 
       state.isRecord = true;   
     }
 
     const onStop = () => {
       if (state.isRecord === false) return;
+
+      state.processorPort.postMessage({
+        message: 'UPDATE_RECORDING_STATE',
+        setRecording: false,
+      });
       state.isRecord = false;     
     }
 
@@ -77,7 +83,7 @@ export default defineComponent({
       console.log(micSourceNode);
 
       const gainNode = new GainNode(state.audioContext);
-      // // const analyserNode = new AnalyserNode(audioContext);
+      const analyserNode = new AnalyserNode(state.audioContext);
 
       const recordingProperties = {
         numberOfChannels: micSourceNode.channelCount,
@@ -86,7 +92,7 @@ export default defineComponent({
       };
 
       const recordingNode = await setupRecordingWorkletNode(recordingProperties);
-
+      state.processorPort = recordingNode.port;
       // const waveform = new Waveform('#recording-canvas', analyserNode, 32);
       // const vuMeter = new VUMeter('#vu-meter', -40, analyserNode, 32, 6);
 
@@ -98,18 +104,18 @@ export default defineComponent({
         if (event.data.message === 'UPDATE_VISUALIZERS') {
           // visualizerCallback(event);
         } else {
-          console.log(event);
+          // console.log("data:", event);
           recordingCallback(event);
         }
       };
 
       gainNode.gain.value = 0;
       try {
-        // micSourceNode
-        //   .connect(analyserNode)
-        //   .connect(recordingNode)
-        //   .connect(gainNode)
-        //   .connect(audioContext.destination);
+        micSourceNode
+          .connect(analyserNode)
+          .connect(recordingNode)
+          .connect(gainNode)
+          .connect(state.audioContext.destination);
       }catch(e) {
         console.error(e);
       }
@@ -151,19 +157,20 @@ export default defineComponent({
         }
 
         if (event.data.message === 'SHARE_RECORDING_BUFFER') {
+          console.log("recordingLength ", recordingLength)
           createRecord(recordingProperties, recordingLength, state.audioContext.sampleRate,
               event.data.buffer);
         }
       }
 
-      // if (recordingState === RecorderStates.UNINITIALIZED) {
-      //     recordingState = RecorderStates.RECORDING;
-      //     processorPort.postMessage({
-      //       message: 'UPDATE_RECORDING_STATE',
-      //       setRecording: true,
-      //     });
-      //     //changeButtonStatus();
-      // }
+      if (state.isRecord === false) {
+        console.error(1);
+          processorPort.postMessage({
+            message: 'UPDATE_RECORDING_STATE',
+            setRecording: true,
+          });
+          //changeButtonStatus();
+      }
       return recordingEventCallback;
     }
 
@@ -171,12 +178,15 @@ export default defineComponent({
       const recordingBuffer = state.audioContext.createBuffer(
         recordingProperties.numberOfChannels,
         recordingLength,
-        sampleRate);
+        sampleRate
+      );
 
         for (let i = 0; i < recordingProperties.numberOfChannels; i++) {
           recordingBuffer.copyToChannel(dataBuffer[i], i, 0);
         }
-        const audioFileUrl = createLinkFromAudioBuffer(recordingBuffer, true);
+
+        console.log(":createLinkFromAudioBuffer ", createLinkFromAudioBuffer);
+        const audioFileUrl = createLinkFromAudioBuffer.default(recordingBuffer, true);
         recordAudio.value.src = audioFileUrl;
     }
     

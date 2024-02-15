@@ -68,18 +68,18 @@ async function initializeAudio() {
 
   const recordingNode = await setupRecordingWorkletNode(recordingProperties);
 
-  const waveform = new Waveform('#recording-canvas', analyserNode, 32);
-  const vuMeter = new VUMeter('#vu-meter', -40, analyserNode, 32, 6);
+  // const waveform = new Waveform('#recording-canvas', analyserNode, 32);
+  // const vuMeter = new VUMeter('#vu-meter', -40, analyserNode, 32, 6);
 
   // We can pass this port across the app and let components handle
   // their relevant messages.
-  const visualizerCallback = setupVisualizers(waveform, vuMeter);
+  // const visualizerCallback = setupVisualizers(waveform, vuMeter);
   const recordingCallback = handleRecording(
       recordingNode.port, recordingProperties);
 
   recordingNode.port.onmessage = (event) => {
     if (event.data.message === 'UPDATE_VISUALIZERS') {
-      visualizerCallback(event);
+      //visualizerCallback(event);
     } else {
       recordingCallback(event);
     }
@@ -135,12 +135,14 @@ function handleRecording(processorPort, recordingProperties) {
           event.data.buffer);
     }
     if (event.data.message === 'UPDATE_RECORDING_LENGTH') {
+      console.log("recordingLength ", recordingLength);
       recordingLength = event.data.recordingLength;
 
       document.querySelector('#data-len').textContent =
           Math.round(recordingLength / context.sampleRate * 100)/100;
     }
     if (event.data.message === 'SHARE_RECORDING_BUFFER') {
+      console.log("recordingLength ", recordingLength);
       createRecord(recordingProperties, recordingLength, context.sampleRate,
           event.data.buffer);
     }

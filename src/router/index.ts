@@ -6,7 +6,7 @@ import {
 
 import FcmPage from '@/Fcm.vue';
 import DocPage from '@/Docs.vue';
-import RecordPage  from '@/RecordAudioPage.vue';
+import RecordPage  from '@/RecordAudioWPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {

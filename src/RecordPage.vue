@@ -6,7 +6,7 @@
         <canvas ref = 'recordVisualizer' width = "100" height = "100"/>
       </div>
       <div class = "flex w-100%">
-        <div class ='btn-medium' @click.stop="onRecord"> Record </div>
+        <div class ='btn-medium' :class = "{'load' : state.isRecord === true}" @click.stop="onRecord"> Record </div>
         <div class ='btn-medium' @click.stop="onStop"> Stop </div>
       </div>
       <div class = 'record-clip'>  
@@ -79,7 +79,7 @@ export default defineComponent({
         newAudio.src = audioURL;
         console.log(recordAudio.value);
 
-        document.getElementById('test').prepend(newAudio);
+        // document.getElementById('test').prepend(newAudio);
         
       
 
@@ -163,6 +163,7 @@ export default defineComponent({
       recordAudio,
       onRecord,
       onStop,
+      state,
     }
 
   },
@@ -175,5 +176,9 @@ export default defineComponent({
     border-radius: 0.6rem;
     margin: 1rem;
     cursor: pointer;
+
+    &.load {
+      background: red;
+    }
   }
 </style>

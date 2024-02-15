@@ -45,7 +45,7 @@ export default defineComponent({
 
     const doRecord = () => {
       if (state.mediaRecorder) {
-        state.mediaRecorder.start(1000);
+        state.mediaRecorder.start(5000);
         console.log(state.mediaRecorder.state);
         console.log("Recorder started.");
       }
@@ -70,7 +70,7 @@ export default defineComponent({
         const newAudio = document.createElement("audio");
         recordAudio.value.controls = true;
         //const blob = new Blob(chunks, { type: state.mediaRecorder.mimeType});
-        const blob = new Blob(chunks, { type: "audio/wav"});
+        const blob = new Blob(chunks, { type: 'audio/mp3 codecs=opus'});
         
         chunks = [];
         const audioURL = window.URL.createObjectURL(blob);

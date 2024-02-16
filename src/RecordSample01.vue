@@ -3,7 +3,7 @@
     <div class = 'w-[80%] flex justify-center items-center flex-col'> 
       Record Page 
       (기본 MediaRecorder API 이용)
-      <bre></bre>useAudioWorklet : {{  state.useAudioWorklet }}
+      <br>useAudioWorklet : {{  state.useAudioWorklet }}
       <div>
         <canvas ref = 'recordVisualizer' width = "100" height = "100"/>
       </div>
@@ -62,8 +62,7 @@ export default defineComponent({
           .getUserMedia(constraints)
           .then((stream) => {
             const options = {
-              audioBitsPerSecond: 128000,
-              mimeType:'audio/webm'
+              
             };
             state.rec = new MediaRecorder(stream, options);
             state.rec.start();

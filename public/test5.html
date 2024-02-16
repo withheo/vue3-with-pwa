@@ -1,0 +1,41 @@
+<html>
+<body>
+  <button onclick="startRecording()">start</button><br>
+  <button onclick="endRecording()">end</button>
+  <audio id="video" controls preload="auto"></audio>
+  <audio id="video2" controls preload="auto"></audio>
+<script>
+let blobs = [];
+let stream;
+let mediaRecorder;
+async function startRecording()
+{
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (event) => {
+       // Let's append blobs for now, we could also upload them to the network.
+       if (event.data)
+            blobs.push(event.data);
+    }
+    mediaRecorder.onstop = doPreview;
+    // Let's receive 1 second blobs
+    mediaRecorder.start(1000);
+}
+function endRecording()
+{    // Let's stop capture and recording
+    mediaRecorder.stop();
+    stream.getTracks().forEach(track => track.stop());
+}
+function doPreview()
+{
+    if (!blobs.length)
+        return;
+    // Let's concatenate blobs to preview the recorded content
+    const el = document.getElementById('video');
+    const el2 = document.getElementById('video2');
+    el.src = URL.createObjectURL(new Blob(blobs, { type: mediaRecorder.mimeType }));
+    el2.src = URL.createObjectURL(new Blob(blobs));
+}
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@
         <div class ='btn-medium' @click.stop="onStop"> Stop </div>
       </div>
       <div class = 'record-clip'>  
-        <audio ref = 'recordAudio' controls preload="auto"/>
+        <audio ref = 'recordAudio' controls preload="auto"></audio>
         <div id="test"></div>
       </div>
     </div>
@@ -39,11 +39,12 @@ export default defineComponent({
       isRecord: false,
       ctx: null,
       input : null,
-      rec: null,
       gumStream: null,
       audioContext: null,
       processorPort: null,
       useAudioWorklet: false,
+      mediaRecorder: null,
+      blobs: []
     })
 
     const onRecord = async () => {
@@ -52,84 +53,36 @@ export default defineComponent({
       state.isRecord = true;   
     }
 
-    const doRecord = () => {
-      if (navigator.mediaDevices) {
-        console.log("getUserMedia supported.");
-        const constraints = { audio: true };
-        let chunks: any[] = [];
-
-        navigator.mediaDevices
-          .getUserMedia(constraints)
-          .then((stream) => {
-            const options = {
-              
-            };
-            state.rec = new MediaRecorder(stream, options);
-            state.rec.start();
-
-
-            state.rec.onstop = (e: any) => {
-              // state.rec.stream.stop();
-              // console.log("data available after MediaRecorder.stop() called.");
-
-              // const clipName = prompt("Enter a name for your sound clip");
-
-              // const clipContainer = document.createElement("article");
-              // const clipLabel = document.createElement("p");
-              // const audio = document.createElement("audio");
-              // const deleteButton = document.createElement("button");
-              //const mainContainer = document.querySelector("body");
-
-              // clipContainer.classList.add("clip");
-              // audio.setAttribute("controls", "");
-              // deleteButton.textContent = "Delete";
-              // clipLabel.textContent = clipName;
-
-              //clipContainer.appendChild(audio);
-             // clipContainer.appendChild(clipLabel);
-             // clipContainer.appendChild(deleteButton);
-            //  mainContainer.appendChild(clipContainer);
-
-             // audio.controls = true;
-              const blob = new Blob(chunks, { type: "audio/webm; codecs=opus" });
-              chunks = [];
-              const audioURL = URL.createObjectURL(blob);
-              //audio.src = audioURL;
-              recordAudio.value.src = audioURL;
-             // audio.controls = true;
-            //  audio.preload = "auto";
-            //  console.log("recorder stopped");
-
-              // deleteButton.onclick = (e: any) => {
-              //   // const evtTgt = e.target;
-              //   // evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
-              // };
-            };
-
-            state.rec.ondataavailable = (e: any) => {
-              console.log(state.rec.mimeType)
-              chunks.push(e.data);
-            };
-          })
-          .catch((err) => {
-            console.error(`The following error occurred: ${err}`);
-          });
+    const doRecord = async () => {
+      state.gumStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      state.mediaRecorder = new MediaRecorder(state.gumStream);
+      state.mediaRecorder.ondataavailable = (event: any) => {
+        // Let's append blobs for now, we could also upload them to the network.
+        if (event.data) {
+          state.blobs.push(event.data);
+        }
       }
+
+      state.mediaRecorder.onstop = doStop;
+      state.mediaRecorder.start();
     }
 
     const onStop = () => {
       if (state.isRecord === false) return;
-      state.rec.stop();
-     
-      state.isRecord = false;     
+      state.mediaRecorder.stop();    
+      state.isRecord = false;    
+      // state.gumStream.getTracks().forEach((track: any) => track.stop());
     }
 
-   
-    
+    const doStop = () => {
+      if (!state.blobs || !state.blobs.length) return;
+      recordAudio.value.src = URL.createObjectURL(new Blob(state.blobs, { type: state.mediaRecorder.mimeType }));
+      state.blobs = [];
+    }
+      
 
     onMounted(()=> {   
-      state.useAudioWorklet  = window.AudioWorklet && !(["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) || navigator.userAgent.includes("Mac") && "ontouchend"in document) && !/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      
+      state.useAudioWorklet  = window.AudioWorklet && !(["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) || navigator.userAgent.includes("Mac") && "ontouchend"in document) && !/^((?!chrome|android).)*safari/i.test(navigator.userAgent);      
     })
 
     return {

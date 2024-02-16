@@ -2,7 +2,7 @@
   <div class = 'h-full w-full flex justify-center items-center'>
     <div class = 'w-[80%] flex justify-center items-center flex-col'> 
       Record Page
-      (use AudioWorkletNode)
+      <bre></bre> (use AudioWorkletNode)
       <div>
         <canvas ref = 'recordVisualizer' width = "100" height = "100"/>
       </div>
@@ -110,7 +110,8 @@ export default defineComponent({
         }
       };
 
-      gainNode.gain.value = 1;
+      // gainNode.gain.value = 0;
+      
       try {
         micSourceNode
           .connect(analyserNode)

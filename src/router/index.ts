@@ -6,23 +6,38 @@ import {
 
 import FcmPage from '@/Fcm.vue';
 import DocPage from '@/Docs.vue';
-import RecordPage  from '@/RecordAudioWPage.vue';
+import RecordSample01  from '@/RecordSample01.vue';
+import RecordSample02 from '@/RecordSample02.vue';
+import RouterPage from '@/RouterPage.vue';
 
 const routes: RouteRecordRaw[] = [
+  { 
+    path: "/",    
+    component: RouterPage,
+  },
+  {
+    path: '/fcm',
+    component: FcmPage,
+  },
   {
     path: "/record",
-    name: '',
     component: FcmPage,
   },
   {
     path: "/install-docs",
-    name: "docs Page",
     component: DocPage,
   },
   { 
-    path: "/",
-    name: 'voice Record Page',
-    component: RecordPage,
+    path: "/audioSample1",
+    component: RecordSample01,
+  },
+  { 
+    path: "/audioSample2",
+    component: RecordSample02,
+  },
+  {
+    path: '/:NotFound(.*)',
+    component: RouterPage
   }
 ];
 

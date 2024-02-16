@@ -7,17 +7,17 @@
 <script lang="ts">
 // import axios from 'axios';
  import { defineComponent } from 'vue';
-export default defineComponent({
-  name: 'App',
-  components: {
-  
-  },
-  setup() { 
-    return {
-      
+  export default defineComponent({
+    name: 'App',
+    components: {
+    
+    },
+    setup() { 
+      return {
+        
+      }
     }
-  }
-});
+  });
 </script>
 
 <style lang="scss">

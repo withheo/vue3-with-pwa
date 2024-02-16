@@ -13,5 +13,8 @@ module.exports = defineConfig({
       },
       extensions: [".ts", ".js", ".scss"],
     },
+  },
+  devServer: {
+    historyApiFallback: true,
   }
 })

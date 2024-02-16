@@ -4,9 +4,9 @@ import { createApp } from 'vue'
 import Router from '@/router';
 
 import App from './App.vue'
-import Fcm from './Fcm.vue';
-import OneSinal from './OneSignal.vue';
-import FingerApp from './Finger.vue';
+// import Fcm from './Fcm.vue';
+//import OneSinal from './OneSignal.vue';
+// import FingerApp from './Finger.vue';
 import I18n from '@/lang';
 
 //import OneSignalVuePlugin from '@onesignal/onesignal-vue3'

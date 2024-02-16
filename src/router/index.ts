@@ -9,6 +9,8 @@ import DocPage from '@/Docs.vue';
 import RecordSample01  from '@/RecordSample01.vue';
 import RecordSample02 from '@/RecordSample02.vue';
 import RecordSample03 from '@/RecordSample03.vue';
+import RecordSample04 from '@/RecordSample04.vue';
+import RecordSample05 from '@/RecordSample05.vue';
 import RouterPage from '@/RouterPage.vue';
 
 const routes: RouteRecordRaw[] = [
@@ -39,6 +41,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/audioSample3',
     component: RecordSample03,
+  },
+  { 
+    path: "/audioSample4",
+    component: RecordSample04,
+  },
+  {
+    path: '/audioSample5',
+    component: RecordSample05,
   },
   {
     path: '/:NotFound(.*)',

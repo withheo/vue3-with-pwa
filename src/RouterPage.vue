@@ -16,6 +16,12 @@
       <div class = 'route'>
         <router-link to= '/audioSample3'> 오디오샘플#3 페이지</router-link>
       </div>
+      <div class = 'route'>
+        <router-link to= '/audioSample4'> 오디오샘플#4 페이지</router-link>
+      </div>
+      <div class = 'route'>
+        <router-link to= '/audioSample5'> 오디오샘플#5 페이지</router-link>
+      </div>
     </div>
   </div>
 </template>

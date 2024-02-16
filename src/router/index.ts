@@ -8,6 +8,7 @@ import FcmPage from '@/Fcm.vue';
 import DocPage from '@/Docs.vue';
 import RecordSample01  from '@/RecordSample01.vue';
 import RecordSample02 from '@/RecordSample02.vue';
+import RecordSample03 from '@/RecordSample03.vue';
 import RouterPage from '@/RouterPage.vue';
 
 const routes: RouteRecordRaw[] = [
@@ -36,9 +37,13 @@ const routes: RouteRecordRaw[] = [
     component: RecordSample02,
   },
   {
+    path: '/audioSample3',
+    component: RecordSample03,
+  },
+  {
     path: '/:NotFound(.*)',
     component: RouterPage
-  }
+  }, 
 ];
 
 

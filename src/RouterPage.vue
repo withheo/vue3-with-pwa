@@ -13,6 +13,9 @@
       <div class = 'route'>
         <router-link to= '/audioSample2'> 오디오샘플#2 페이지</router-link>
       </div>
+      <div class = 'route'>
+        <router-link to= '/audioSample3'> 오디오샘플#3 페이지</router-link>
+      </div>
     </div>
   </div>
 </template>

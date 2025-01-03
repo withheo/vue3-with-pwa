@@ -14,6 +14,9 @@ import RecordSample05 from '@/RecordSample05.vue';
 import RouterPage from '@/RouterPage.vue';
 import Streaming01 from '@/Streaming01.vue';
 import Streaming02 from '@/Streaming02.vue';
+import Streaming03 from '@/Streaming03.vue';
+import Streaming04 from '@/Streaming04.vue';
+import Streaming05 from '@/Streaming05.vue';
 
 const routes: RouteRecordRaw[] = [
   { 
@@ -39,6 +42,18 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/streaming2",
     component: Streaming02,
+  },
+  {
+    path: "/streaming3",
+    component: Streaming03,
+  },
+  {
+    path: "/streaming4",
+    component: Streaming04,
+  },
+  {
+    path: "/streaming5",
+    component: Streaming05,
   },
   { 
     path: "/audioSample1",

@@ -42,7 +42,8 @@ export default defineComponent({
           },
           sources: [
             {
-              src:"https://streaming.ynatv.co.kr/live/mam/ingest/StreamingRoot/2025-01-03/s2_130256_CH03_Clip/Video_000/Video_000.m3u8",
+              // src:"https://streaming.ynatv.co.kr/live/mam/ingest/StreamingRoot/2025-01-03/s2_130256_CH03_Clip/Video_000/Video_000.m3u8",
+              src: "https://streaming.ynatv.co.kr/proxy/lowres/test/2025/01/03/10881/proxy_N20250103V00021.m3u8",
               type: 'application/vnd.apple.mpegurl', // HLS 스트리밍 MIME 타입 설정
             },
           ],

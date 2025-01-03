@@ -22,6 +22,12 @@
         <router-link to= '/streaming5'> 스트리밍 #5</router-link>
       </div>
       <div class = 'route'>
+        <router-link to= '/streaming6'> 스트리밍 #6</router-link>
+      </div>
+      <div class = 'route'>
+        <router-link to= '/streaming7'> 스트리밍 #7</router-link>
+      </div>
+      <div class = 'route'>
         <a href="https://www.romenov.com/streaming/">타 스트리밍 페이지</a>
       </div>
 

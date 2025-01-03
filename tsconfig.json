@@ -6,6 +6,7 @@
     "strict": true,
     "strictNullChecks": false,
     "jsx": "preserve",
+    "noImplicitAny": false,
     "importHelpers": true,
     "moduleResolution": "node",
     "skipLibCheck": true,

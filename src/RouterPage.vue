@@ -7,10 +7,20 @@
         <router-link to= '/fcm'>푸시메세지</router-link>
       </div>
       <div class = 'route'>
-        <router-link to= '/audioSample1'> 오디오샘플#1 페이지</router-link>
+        <router-link to= '/streaming1'> 스트리밍 #1</router-link>
+      </div>
+      <div class = 'route'>
+        <router-link to= '/streaming2'> 스트리밍 #2</router-link>
+      </div>
+      <div class = 'route'>
+        <a href="https://www.romenov.com/streaming/">타 스트리밍 페이지</a>
       </div>
 
-      <div class = 'route'>
+      <!-- <div class = 'route'>
+        <router-link to= '/audioSample1'> 오디오샘플#1 페이지</router-link>
+      </div> -->
+
+      <!-- <div class = 'route'>
         <router-link to= '/audioSample2'> 오디오샘플#2 페이지</router-link>
       </div>
       <div class = 'route'>
@@ -21,7 +31,7 @@
       </div>
       <div class = 'route'>
         <router-link to= '/audioSample5'> 오디오샘플#5 페이지</router-link>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

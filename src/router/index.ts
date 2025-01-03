@@ -12,6 +12,8 @@ import RecordSample03 from '@/RecordSample03.vue';
 import RecordSample04 from '@/RecordSample04.vue';
 import RecordSample05 from '@/RecordSample05.vue';
 import RouterPage from '@/RouterPage.vue';
+import Streaming01 from '@/Streaming01.vue';
+import Streaming02 from '@/Streaming02.vue';
 
 const routes: RouteRecordRaw[] = [
   { 
@@ -29,6 +31,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/install-docs",
     component: DocPage,
+  },
+  {
+    path: "/streaming1",
+    component: Streaming01,
+  },
+  {
+    path: "/streaming2",
+    component: Streaming02,
   },
   { 
     path: "/audioSample1",

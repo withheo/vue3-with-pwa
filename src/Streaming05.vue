@@ -11,8 +11,8 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import 'video.js/dist/video-js.css'; // Video.js 기본 스타일
 import videojs from 'video.js';
-import '@gemiso-dev/videojs-g-plugin/dist/videojs-gemiso-plugin.css';
-import '@gemiso-dev/videojs-g-plugin/dist/videojs-gemiso-plugin.min.js';
+import '@/lib/videojs-gemiso-plugin.css';
+import '@/lib/videojs-gemiso-plugin.min.js';
 
 export default defineComponent({
   setup() {
